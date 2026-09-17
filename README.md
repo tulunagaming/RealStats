@@ -29,11 +29,25 @@ Flasks and food are part of your stats, just like for the best players. Their
 share appears as a purple piece at the end of your bar, so you can see what
 comes from your gear.
 
+## Performance & stability
+
+* **Nothing runs during combat.** The window freezes and RealStats stops listening
+  to stat, gear and buff events (tested: 3000 events in combat -> 0 refreshes).
+* **No per-frame updates.** Bursts of events are merged into one refresh
+  (tested: 1000 buff changes -> 1 refresh).
+* The gear calculation only runs when you press *Calculate*.
+* Values that WoW 12.x hides ("secret values") are handled without Lua errors.
+* 212 automated checks run before every release.
+* Measured in game: *follows with the first release* (average CPU per frame during a
+  Mythic+ key, highest sample, memory).
+* Check it yourself: `/realstats perf`
+
 ## Commands
 
 * `/realstats` show / hide
 * `/realstats dock` dock to the character window or float freely (shift + drag)
 * `/realstats lock`, `/realstats scale <0.5-3>`, `/realstats reset`
+* `/realstats perf` CPU and memory, `/realstats perf start|stop` record a measurement run
 
 The window freezes during combat, so procs do not make the bars jump.
 
