@@ -74,6 +74,8 @@ if GetLocale() == "deDE" then
     L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, mythic raid), scaled to your total. In target = within ±5 %%."] =
         "Ziele: So verteilen die %d besten Spieler deiner Spezialisierung ihre Sekundärwerte (Warcraft Logs, Raid mythisch), umgerechnet auf deine Summe. Im Ziel = höchstens ±5 %% Abweichung."
     L["Frozen during combat"] = "Im Kampf eingefroren"
+    L["Stats are hidden by the game right now - showing the last values."] =
+        "Werte gerade vom Spiel gesperrt - Anzeige zeigt den letzten Stand."
     L["%d top players · keys +%d-%d · as of %s"] = "%d Top-Spieler · +%d-%d · Stand %s"
     L["Your value"]        = "Dein Wert"
     L["from gear"]         = "davon Ausrüstung"
@@ -183,6 +185,23 @@ local function Rating(key)
     end
     if not id then return 0 end
     return GetCombatRating(id) or 0
+end
+
+-- In 12.x liefert das Spiel in manchen Lagen geheime Zahlen. Mit ihnen darf
+-- ein Addon nicht rechnen (harter Fehler, "execution tainted").
+local function IsSecret(v)
+    return issecretvalue ~= nil and issecretvalue(v) and true or false
+end
+
+-- Alle vier Wertungen, oder nil, wenn eine davon geheim ist.
+local function ReadRatings()
+    local values = {}
+    for _, key in ipairs({ "crit", "haste", "mastery", "versatility" }) do
+        local v = Rating(key)
+        if IsSecret(v) then return nil end
+        values[key] = v
+    end
+    return values
 end
 
 local function CurrentSpecID()
@@ -491,9 +510,12 @@ local function Update()
         frame.explain:SetText(L["Only bound items from your bags, at most 2 embellishments, set bonus kept, trinkets stay. Gems and enchants move with the item."])
         frame.explain:Show()
         frame.footer:SetText("")
-        local total = 0
-        for _, st in ipairs(STATS) do total = total + Rating(st.key) end
-        frame.subtitle:SetText(string.format(L["Your stat total %d"], Round(total)))
+        local ratings = ReadRatings()
+        if ratings then
+            local total = 0
+            for _, st in ipairs(STATS) do total = total + ratings[st.key] end
+            frame.subtitle:SetText(string.format(L["Your stat total %d"], Round(total)))
+        end
         local h = ns.ShowGearTab and ns.ShowGearTab() or 0
         frame:SetHeight(PanelHeight(HEADER + h + EXPLAIN_H + 24))
         return
@@ -513,14 +535,18 @@ local function Update()
         return
     end
 
+    -- Geheime Werte: nichts rechnen, letzten Stand stehen lassen
+    local values = ReadRatings()
+    local buffs = ns.FixedBuffs and ns.FixedBuffs() or { list = {} }
+    if not values or buffs.locked then
+        frame.footer:SetText(L["Stats are hidden by the game right now - showing the last values."])
+        return
+    end
+
     frame.message:Hide()
     ns.activeShare = data.share
-
-    local values = {}
-    for _, s in ipairs(STATS) do values[s.key] = Rating(s.key) end
     local result = ns.Evaluate(values, data.share)
 
-    local buffs = ns.FixedBuffs and ns.FixedBuffs() or { list = {} }
     local buffTotal = 0
     for _, def in ipairs(STATS) do
         local r = result[def.key]
@@ -540,7 +566,12 @@ local function Update()
         DrawRow(totalRow, {
             current = result.total, target = t.median, mean = t.mean,
             low = t.p25, high = t.p75, delta = result.total - t.median, status = "total",
-            ilvl = GetAverageItemLevel and select(2, GetAverageItemLevel()) or nil,
+            ilvl = (function()
+                if not GetAverageItemLevel then return nil end
+                local _, equipped = GetAverageItemLevel()   -- lokal: globales "_" wäre Taint
+                if equipped == nil or IsSecret(equipped) then return nil end
+                return equipped
+            end)(),
             topIlvl = data.ilvl,
             buff = buffTotal, buffs = buffs.list,
         })
@@ -682,7 +713,7 @@ end
 
 ns.UI = {
     L = L, db = db, PAD = PAD, WIDTH = WIDTH, HEADER = HEADER, COLORS = COLORS,
-    Round = Round, Rating = Rating, CurrentSpecID = CurrentSpecID,
+    Round = Round, Rating = Rating, ReadRatings = ReadRatings, CurrentSpecID = CurrentSpecID,
     IsInCombat = function() return inCombat end,
     Update = function() Update() end,
 }

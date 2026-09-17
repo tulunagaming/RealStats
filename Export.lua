@@ -65,6 +65,15 @@ local function Describe(link)
 end
 
 function ns.TakeSnapshot()
+    -- Geheime Wertungen (z. B. beim Ausloggen in bestimmten Lagen): den letzten
+    -- gültigen Schnappschuss behalten statt einen unbrauchbaren zu schreiben.
+    local ids = { CR_CRIT_MELEE, CR_HASTE_MELEE, CR_MASTERY, CR_VERSATILITY_DAMAGE_DONE }
+    for _, id in ipairs(ids) do
+        local v = GetCombatRating(id)
+        if issecretvalue and issecretvalue(v) then
+            return RealStatsDB and RealStatsDB.snapshot or nil
+        end
+    end
     local specIndex = GetSpecialization and GetSpecialization()
     local snapshot = {
         time      = time(),

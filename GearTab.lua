@@ -117,8 +117,12 @@ local function Calculate()
         state.message = L["No targets for this content yet."]
         return
     end
-    local ratings = {}
-    for _, k in ipairs(KEYS) do ratings[k] = ui.Rating(k) end
+    local ratings = ui.ReadRatings()
+    if not ratings then
+        state.result = nil
+        state.message = "|cffff9933" .. L["Stats are hidden by the game right now - showing the last values."] .. "|r"
+        return
+    end
     state.result = ns.Optimize(ns.CollectGear(), ratings, data.share)
     state.ready = nil
     if #state.result.changes == 0 then MarkReady(ui.db().optFor) end   -- schon die beste Ausrüstung

@@ -40,7 +40,6 @@ local function IsSecret(v)
     return issecretvalue and issecretvalue(v)
 end
 
--- Erste Zahl hinter Position "from"; Prozentwerte zählen nicht.
 -- Größte Zahl in text[from, to]; Prozentwerte zählen nicht. Die größte, weil
 -- im Satz auch die Laufzeit stehen kann ("1 Stunde lang um 165").
 local function LargestNumber(text, from, to)
@@ -106,6 +105,9 @@ function ns.DebugBuffs(print)
     if not (C_UnitAuras and C_UnitAuras.GetAuraDataByIndex) then
         print("C_UnitAuras.GetAuraDataByIndex fehlt"); return
     end
+    if C_Secrets and C_Secrets.ShouldAurasBeSecret and C_Secrets.ShouldAurasBeSecret() then
+        print("Auren sind gerade geheim (C_Secrets.ShouldAurasBeSecret)"); return
+    end
     for index = 1, 40 do
         local aura = C_UnitAuras.GetAuraDataByIndex("player", index, "HELPFUL")
         if not aura then break end
@@ -135,6 +137,11 @@ end
 function ns.FixedBuffs()
     local result = { crit = 0, haste = 0, mastery = 0, versatility = 0, list = {} }
     if not (C_UnitAuras and C_UnitAuras.GetAuraDataByIndex) then return result end
+    -- Sind Auren gerade geheim, ist schon das Lesen ein harter Fehler.
+    if C_Secrets and C_Secrets.ShouldAurasBeSecret and C_Secrets.ShouldAurasBeSecret() then
+        result.locked = true
+        return result
+    end
 
     for index = 1, 255 do
         local aura = C_UnitAuras.GetAuraDataByIndex("player", index, "HELPFUL")
