@@ -45,6 +45,8 @@ if GetLocale() == "deDE" then
     L["Calculate"]         = "Berechnen"
     L["Equip"]             = "Anlegen"
     L["Save as set: %s"]   = "Als Set speichern: %s"
+    L["Calculate and equip first, then save the result as a set."] =
+        "Erst berechnen und anlegen, dann das Ergebnis als Set speichern."
     L["Set \"%s\" saved in the equipment manager."] = "Set \"%s\" im Ausrüstungsmanager gespeichert."
     L["Not possible during combat."] = "Im Kampf nicht möglich."
     L["Calculate checks your equipped items and bags."] = "Berechnen prüft deine angelegten Items und deine Taschen."

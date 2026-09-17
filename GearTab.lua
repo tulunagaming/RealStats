@@ -19,7 +19,28 @@ local SET_NAMES = { mplus = "RealStats M+", raid = "RealStats Raid" }
 local SET_ICON = 134400   -- Fragezeichen; wird durch das Waffensymbol ersetzt, wenn vorhanden
 
 local panel
-local state = { result = nil, stale = false, busy = false, message = nil }
+local state = { result = nil, stale = false, busy = false, message = nil, ready = nil }
+
+-- Plätze, die der Optimierer verwaltet; daran wird erkannt, ob seit dem
+-- Anlegen umgerüstet wurde.
+local MANAGED_SLOTS = { 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16 }
+
+local function EquippedIDs()
+    local parts = {}
+    for _, slot in ipairs(MANAGED_SLOTS) do
+        local link = GetInventoryItemLink("player", slot)
+        parts[#parts + 1] = link and tostring((C_Item.GetItemInfoInstant(link))) or "-"
+    end
+    return table.concat(parts, ",")
+end
+
+-- Speichern als Set erst, wenn die berechnete Ausrüstung für dieses Ziel
+-- wirklich angelegt ist (oder die Rechnung keine Wechsel ergab) und seitdem
+-- nichts umgerüstet wurde.
+local function MarkReady(key) state.ready = { key = key, ids = EquippedIDs() } end
+local function CanSave(key)
+    return state.ready ~= nil and state.ready.key == key and state.ready.ids == EquippedIDs()
+end
 
 local function UI() return ns.UI end
 
@@ -41,7 +62,7 @@ local function Render()
     local combat = ui.IsInCombat()
     local result = state.result
     panel.calc:SetEnabled(not combat and not state.busy)
-    panel.saveSet:SetEnabled(not combat and not state.busy and C_EquipmentSet ~= nil)
+    panel.saveSet:SetEnabled(not combat and not state.busy and C_EquipmentSet ~= nil and CanSave(s.optFor))
     panel.saveSet:SetText(string.format(L["Save as set: %s"], SET_NAMES[s.optFor] or SET_NAMES.mplus))
     panel.apply:SetEnabled(not combat and not state.busy and result ~= nil
                            and #result.changes > 0 and not state.stale)
@@ -99,6 +120,8 @@ local function Calculate()
     local ratings = {}
     for _, k in ipairs(KEYS) do ratings[k] = ui.Rating(k) end
     state.result = ns.Optimize(ns.CollectGear(), ratings, data.share)
+    state.ready = nil
+    if #state.result.changes == 0 then MarkReady(ui.db().optFor) end   -- schon die beste Ausrüstung
 end
 
 -- Speichert die gerade angelegte Ausrüstung als Set im Ausrüstungsmanager.
@@ -107,6 +130,7 @@ function ns.SaveGearSet(key)
     local L = UI().L
     local name = SET_NAMES[key] or SET_NAMES.mplus
     if not C_EquipmentSet or UI().IsInCombat() or (InCombatLockdown and InCombatLockdown()) then return false end
+    if not CanSave(key) then return false end
     local icon = GetInventoryItemTexture and GetInventoryItemTexture("player", 16) or SET_ICON
     local id = C_EquipmentSet.GetEquipmentSetID(name)
     if id then
@@ -127,6 +151,7 @@ local function Apply()
     ns.EquipChanges(result.changes, function(ok, failed)
         state.busy, state.result = false, nil
         if #failed == 0 then
+            MarkReady(UI().db().optFor)
             state.message = "|cff40bb4f" .. string.format(L["Equipped %d item(s)."], ok) .. "|r"
         else
             state.message = "|cffe6544a" .. string.format(L["%d item(s) could not be equipped."], #failed) .. "|r"
@@ -163,6 +188,7 @@ function ns.CreateGearTab(frame)
         b:SetPoint("LEFT", previous, "RIGHT", 6, 0)
         b:SetScript("OnClick", function(self)
             ui.db().optFor = self.key
+            state.ready = nil
             if state.result then state.stale = true end
             Render()
         end)
@@ -189,6 +215,13 @@ function ns.CreateGearTab(frame)
     panel.saveSet = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     panel.saveSet:SetSize(228, 22)
     panel.saveSet:SetPoint("TOPLEFT", panel.calc, "BOTTOMLEFT", 0, -4)
+    panel.saveSet:SetMotionScriptsWhileDisabled(true)
+    panel.saveSet:SetScript("OnEnter", function(self)
+        GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+        GameTooltip:AddLine(L["Calculate and equip first, then save the result as a set."], 1, 1, 1, true)
+        GameTooltip:Show()
+    end)
+    panel.saveSet:SetScript("OnLeave", function() GameTooltip:Hide() end)
     panel.saveSet:SetScript("OnClick", function()
         if ns.SaveGearSet(UI().db().optFor) then UI().Update() end
     end)
