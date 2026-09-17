@@ -96,8 +96,19 @@ if GetLocale() == "deDE" then
     L["position locked."]   = "Position gesperrt."
     L["position unlocked."] = "Position entsperrt."
     L["reset."] = "zurückgesetzt."
-    L["Commands: /realstats | dock | lock | scale <number> | export | reset"] =
-        "Befehle: /realstats | dock | lock | scale <Zahl> | export | reset"
+    L["Commands: /realstats | dock | lock | scale <number> | export | reset | perf [start|stop]"] =
+        "Befehle: /realstats | dock | lock | scale <Zahl> | export | reset | perf [start|stop]"
+    L["Blizzard's addon profiler is not available."] = "Blizzards Addon-Messung ist nicht verfügbar."
+    L["CPU per frame - session: %s, recent: %s, peak: %s"] = "CPU pro Bild - Sitzung: %s, zuletzt: %s, Spitze: %s"
+    L["Share of all addons: %.2f %%"] = "Anteil an allen Addons: %.2f %%"
+    L["Memory: %.0f KB"] = "Speicher: %.0f KB"
+    L["Percent = share of one frame at 60 fps."] = "Prozent = Anteil an einem Bild bei 60 fps."
+    L["A measurement is already running."] = "Es läuft schon eine Messung."
+    L["Measurement started. Play normally, then /realstats perf stop."] =
+        "Messung gestartet. Normal spielen, danach /realstats perf stop."
+    L["No measurement is running."] = "Es läuft keine Messung."
+    L["Measurement saved: %d s, CPU average %s, highest %s."] =
+        "Messung gespeichert: %d s, CPU Durchschnitt %s, höchster Wert %s."
     L["Click: expand"]   = "Klick: ausklappen"
     L["Click: collapse"] = "Klick: einklappen"
     L["docked to the character window."] = "am Charakterfenster angedockt."
@@ -495,6 +506,7 @@ local function Update()
     updateQueued = false
     if not frame then return end
     if inCombat then return end      -- Buffs im Kampf würden die Balken springen lassen
+    ns.updateCount = (ns.updateCount or 0) + 1   -- für die Leistungstests
 
     local specID = CurrentSpecID()
     local specData = specID and ns.TARGETS and ns.TARGETS[specID]
@@ -859,6 +871,18 @@ SlashCmdList["REALSTATS"] = function(input)
                 #snap.equipped, #snap.bags))
         end
 
+    elseif command == "perf" then
+        local sub, label = strsplit(" ", argument or "", 2)
+        sub = (sub or ""):lower()
+        if not ns.Perf then return end
+        if sub == "start" then
+            ns.Perf.Start(Print, L, label or "")
+        elseif sub == "stop" then
+            ns.Perf.Stop(Print, L)
+        else
+            ns.Perf.Report(Print, L)
+        end
+
     elseif command == "buffs" then
         if ns.DebugBuffs then ns.DebugBuffs(Print) end
 
@@ -868,7 +892,7 @@ SlashCmdList["REALSTATS"] = function(input)
         ApplySettings()
         Print(L["reset."])
     else
-        Print(L["Commands: /realstats | dock | lock | scale <number> | export | reset"])
+        Print(L["Commands: /realstats | dock | lock | scale <number> | export | reset | perf [start|stop]"])
     end
 end
 
@@ -906,6 +930,7 @@ events:SetScript("OnEvent", function(_, event, arg1)
         ApplySettings()
 
     elseif event == "PLAYER_LOGOUT" then
+        if ns.Perf then ns.Perf.OnLogout() end
         if ns.TakeSnapshot then ns.TakeSnapshot() end
 
     elseif event == "PLAYER_REGEN_DISABLED" then

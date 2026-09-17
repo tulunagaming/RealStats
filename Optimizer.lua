@@ -283,7 +283,9 @@ function ns.Optimize(gear, ratings, share)
         table.insert(groups, g)
     end
 
+    local evaluated = 0
     local function evaluate(choice)
+        evaluated = evaluated + 1
         local v = { crit = base.crit, haste = base.haste, mastery = base.mastery, versatility = base.versatility }
         local ilvl, emb, set, swaps = 0, 0, 0, 0
         for gi, g in ipairs(groups) do
@@ -355,6 +357,8 @@ function ns.Optimize(gear, ratings, share)
     end
 
     best = best or before
+    ns.lastOptimize = { combinations = combos, evaluated = evaluated,
+                        exhaustive = combos <= EXHAUSTIVE_LIMIT }
     local changes = {}
     for gi, g in ipairs(groups) do
         local o = g.options[best.choice[gi]]

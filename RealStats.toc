@@ -12,6 +12,7 @@ Data_MythicPlus.lua
 Data_Raid.lua
 Buffs.lua
 Optimizer.lua
+Perf.lua
 RealStats.lua
 GearTab.lua
 Export.lua
