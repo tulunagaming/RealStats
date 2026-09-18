@@ -8,6 +8,7 @@
 ## X-License: All Rights Reserved
 ## X-Category: Character
 ## X-Curse-Project-ID: 1700779
+## X-Wago-ID: 56nd0jG9
 
 Data_MythicPlus.lua
 Data_Raid.lua
