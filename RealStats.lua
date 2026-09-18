@@ -59,8 +59,8 @@ if GetLocale() == "deDE" then
     L["%d empty socket(s)"] = "%d leere(r) Sockel"
     L["Equipped %d item(s)."] = "%d Item(s) angelegt."
     L["%d item(s) could not be equipped."] = "%d Item(s) konnten nicht angelegt werden."
-    L["Only bound items from your bags, at most 2 embellishments, set bonus kept, trinkets stay. Gems and enchants move with the item."] =
-        "Nur gebundene Items aus deinen Taschen, höchstens 2 Runenverzierungen, Set-Bonus bleibt, Schmuckstücke bleiben. Edelsteine und Verzauberungen wandern mit dem Item."
+    L["Only bound items from your bags, at most 2 embellishments, set bonus and weapon style kept, trinkets stay. Gems and enchants move with the item."] =
+        "Nur gebundene Items aus deinen Taschen, höchstens 2 Runenverzierungen, Set-Bonus und Kampfweise (Zweihand, Schild, zwei Waffen) bleiben, Schmuckstücke bleiben. Edelsteine und Verzauberungen wandern mit dem Item."
     L["Critical Strike"]   = "Kritischer Trefferwert"
     L["Haste"]             = "Tempo"
     L["Versatility"]       = "Vielseitigkeit"
@@ -519,7 +519,7 @@ local function Update()
         frame.message:Hide()
         frame.explain:ClearAllPoints()
         frame.explain:SetPoint("BOTTOMLEFT", PAD, 24)
-        frame.explain:SetText(L["Only bound items from your bags, at most 2 embellishments, set bonus kept, trinkets stay. Gems and enchants move with the item."])
+        frame.explain:SetText(L["Only bound items from your bags, at most 2 embellishments, set bonus and weapon style kept, trinkets stay. Gems and enchants move with the item."])
         frame.explain:Show()
         frame.footer:SetText("")
         local ratings = ReadRatings()

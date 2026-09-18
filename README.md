@@ -12,7 +12,7 @@ actually distribute theirs. Docks to the right of the character window.
 * A stat the best players barely use (below 10 % share) only gets a guide line.
 * The **Total** row compares your stat sum with the best players. The gap is
   roughly what item upgrades can still give you.
-* Targets are updated every week.
+* Targets for every class and specialization, updated every week (Wednesday).
 
 ## Tabs
 
@@ -21,7 +21,8 @@ actually distribute theirs. Docks to the right of the character window.
 * **Gear**: finds the combination of equipped items and items in your bags that
   comes closest to the targets, equips it with one click and saves it as an
   equipment set ("RealStats M+" / "RealStats Raid").
-  Only bound items, at most 2 embellishments, set bonus kept, trinkets stay.
+  Only bound items, at most 2 embellishments, set bonus kept, weapon style kept
+  (two-hander, shield, dual wield, ranged), trinkets stay.
 
 ## Fixed buffs
 
@@ -37,7 +38,7 @@ comes from your gear.
   (tested: 1000 buff changes -> 1 refresh).
 * The gear calculation only runs when you press *Calculate*.
 * Values that WoW 12.x hides ("secret values") are handled without Lua errors.
-* 212 automated checks run before every release.
+* More than 220 automated checks run before every release.
 * Measured in game: *follows with the first release* (average CPU per frame during a
   Mythic+ key, highest sample, memory).
 * Check it yourself: `/realstats perf`

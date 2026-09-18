@@ -11,7 +11,7 @@ local SLOT_GLOBALS = {
     [1] = "INVTYPE_HEAD", [2] = "INVTYPE_NECK", [3] = "INVTYPE_SHOULDER", [5] = "INVTYPE_CHEST",
     [6] = "INVTYPE_WAIST", [7] = "INVTYPE_LEGS", [8] = "INVTYPE_FEET", [9] = "INVTYPE_WRIST",
     [10] = "INVTYPE_HAND", [11] = "INVTYPE_FINGER", [12] = "INVTYPE_FINGER", [15] = "INVTYPE_CLOAK",
-    [16] = "INVTYPE_2HWEAPON",
+    [16] = "INVTYPE_WEAPONMAINHAND", [17] = "INVTYPE_WEAPONOFFHAND",
 }
 local TARGETS = { { key = "mplus", label = "Mythic+" }, { key = "raid", label = "Raid" } }
 -- Name des Sets im Ausrüstungsmanager (höchstens 16 Zeichen)
@@ -23,7 +23,7 @@ local state = { result = nil, stale = false, busy = false, message = nil, ready 
 
 -- Plätze, die der Optimierer verwaltet; daran wird erkannt, ob seit dem
 -- Anlegen umgerüstet wurde.
-local MANAGED_SLOTS = { 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16 }
+local MANAGED_SLOTS = { 1, 2, 3, 5, 6, 7, 8, 9, 10, 11, 12, 15, 16, 17 }
 
 local function EquippedIDs()
     local parts = {}

@@ -6,7 +6,9 @@
 --   * nur gebundene, für dich nutzbare Items (keine "Beim Anlegen gebunden"-Frage)
 --   * höchstens 2 Runenverzierungen und nicht weniger, als du gerade trägst
 --   * Set-Bonus bleibt: bei 4 Teilen mindestens 4, bei 2 mindestens 2
---   * Schmuckstücke, Nebenhand, Hemd und Wappenrock bleiben unberührt
+--   * Waffen: gleiche Kampfweise wie jetzt (Zweihand bleibt Zweihand, Schild bleibt
+--     Schild, zwei Waffen bleiben zwei Waffen), nie dasselbe Item zweimal
+--   * Schmuckstücke, Hemd und Wappenrock bleiben unberührt
 --   * Werte je Item aus dem Item-Tooltip: Grundwerte, Edelsteine und
 --     Verzauberungen wandern mit dem Item
 --
@@ -40,9 +42,31 @@ local SINGLE_SLOTS = {
     { slot = 9,  locs = { INVTYPE_WRIST = true },    armor = true },
     { slot = 10, locs = { INVTYPE_HAND = true },     armor = true },
     { slot = 15, locs = { INVTYPE_CLOAK = true } },
-    { slot = 16, locs = { INVTYPE_2HWEAPON = true }, twoHand = true },
 }
 local RING_SLOTS = { 11, 12 }
+local WEAPON_SLOTS = { 16, 17 }
+
+-- Waffen-Familien: getauscht wird nur innerhalb der Familie des angelegten Items
+local WEAPON_FAMILIES = {
+    twohand  = { INVTYPE_2HWEAPON = true },
+    ranged   = { INVTYPE_RANGED = true, INVTYPE_RANGEDRIGHT = true },
+    mainhand = { INVTYPE_WEAPON = true, INVTYPE_WEAPONMAINHAND = true },
+    offhand  = { INVTYPE_WEAPON = true, INVTYPE_WEAPONOFFHAND = true },
+    shield   = { INVTYPE_SHIELD = true },
+    holdable = { INVTYPE_HOLDABLE = true },
+}
+
+local function WeaponFamily(slot, e)
+    if not e then return nil end
+    local loc = e.equipLoc
+    if WEAPON_FAMILIES.twohand[loc] then return "twohand" end      -- auch Titanengriff in der Nebenhand
+    if WEAPON_FAMILIES.ranged[loc] then return "ranged" end
+    if WEAPON_FAMILIES.shield[loc] then return "shield" end
+    if WEAPON_FAMILIES.holdable[loc] then return "holdable" end
+    if slot == 16 and WEAPON_FAMILIES.mainhand[loc] then return "mainhand" end
+    if slot == 17 and WEAPON_FAMILIES.offhand[loc] then return "offhand" end
+    return nil
+end
 
 -------------------------------------------------------------------------------
 -- Items lesen
@@ -130,6 +154,9 @@ function ns.CollectGear()
     for _, slot in ipairs(RING_SLOTS) do
         gear.equipped[slot] = Describe(GetInventoryItemLink("player", slot))
     end
+    for _, slot in ipairs(WEAPON_SLOTS) do
+        gear.equipped[slot] = Describe(GetInventoryItemLink("player", slot))
+    end
     local chest = gear.equipped[5]
     gear.armorSubclass = chest and chest.classID == 4 and chest.subclassID or nil
 
@@ -177,8 +204,7 @@ local function Better(a, b)
     return a.swaps < b.swaps
 end
 
--- Streicht nur exakte Doppel (gleiche Werte, gleiches Itemlevel, gleiche
--- Verzierung und gleiches Set). Mehr darf nicht wegfallen: Beim Ziel
+-- Streicht nur Einträge, die auf dasselbe Item zeigen (gleicher Taschenplatz). Mehr darf nicht wegfallen: Beim Ziel
 -- "Verteilung" kann ein Item mit weniger von einem Wert das bessere sein.
 local function Prune(items, keep)
     local out, seen = {}, {}
@@ -187,7 +213,8 @@ local function Prune(items, keep)
     end
     for _, a in ipairs(items) do
         local key = table.concat({ a.ilvl, a.crit, a.haste, a.mastery, a.versatility,
-                                   tostring(a.embellished), tostring(a.setID), a.id }, ":")
+                                   tostring(a.embellished), tostring(a.setID), a.id,
+                                   tostring(a.bag), tostring(a.bagSlot) }, ":")   -- zwei Kopien bleiben zwei Items
         if keep and a == keep then
             seen[key] = true
         elseif not seen[key] then
@@ -238,8 +265,7 @@ function ns.Optimize(gear, ratings, share)
 
     for _, s in ipairs(SINGLE_SLOTS) do
         local current = equipped[s.slot]
-        local usable = current ~= nil and (not s.twoHand or current.equipLoc == "INVTYPE_2HWEAPON")
-        if usable then
+        if current ~= nil then
             for _, k in ipairs(KEYS) do base[k] = base[k] - current[k] end
             local list = { current }
             for _, e in ipairs(gear.bags) do
@@ -251,6 +277,24 @@ function ns.Optimize(gear, ratings, share)
             local g = { options = {} }
             for _, e in ipairs(Prune(list, current)) do
                 table.insert(g.options, option({ e }, { s.slot }))
+            end
+            table.insert(groups, g)
+        end
+    end
+
+    -- Waffen: je Hand eine Gruppe, nur innerhalb der Familie des angelegten Items
+    for _, slot in ipairs(WEAPON_SLOTS) do
+        local current = equipped[slot]
+        local family = WeaponFamily(slot, current)
+        if family then
+            for _, k in ipairs(KEYS) do base[k] = base[k] - current[k] end
+            local list = { current }
+            for _, e in ipairs(gear.bags) do
+                if WEAPON_FAMILIES[family][e.equipLoc] then table.insert(list, e) end
+            end
+            local g = { options = {} }
+            for _, e in ipairs(Prune(list, current)) do
+                table.insert(g.options, option({ e }, { slot }))
             end
             table.insert(groups, g)
         end
@@ -288,8 +332,13 @@ function ns.Optimize(gear, ratings, share)
         evaluated = evaluated + 1
         local v = { crit = base.crit, haste = base.haste, mastery = base.mastery, versatility = base.versatility }
         local ilvl, emb, set, swaps = 0, 0, 0, 0
+        local used = {}
         for gi, g in ipairs(groups) do
             local o = g.options[choice[gi]]
+            for _, e in ipairs(o.items) do          -- dasselbe Item nie in zwei Plätzen
+                if used[e] then return nil end
+                used[e] = true
+            end
             for _, k in ipairs(KEYS) do v[k] = v[k] + o[k] end
             ilvl, emb, set, swaps = ilvl + o.ilvl, emb + o.emb, set + o.set, swaps + o.swaps
         end
