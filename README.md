@@ -3,6 +3,8 @@
 Compares your secondary stats with how the best players of your specialization
 actually distribute theirs. Docks to the right of the character window.
 
+![RealStats: Mythic+ tab docked to the character window](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-mythicplus.jpg)
+
 ## How the targets work
 
 * The targets come from public top logs on Warcraft Logs: how the best players
@@ -24,11 +26,15 @@ actually distribute theirs. Docks to the right of the character window.
   Only bound items, at most 2 embellishments, set bonus kept, weapon style kept
   (two-hander, shield, dual wield, ranged), trinkets stay.
 
+![RealStats: gear tab with the suggested changes](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-gear-changes.jpg)
+
 ## Fixed buffs
 
 Flasks and food are part of your stats, just like for the best players. Their
 share appears as a purple piece at the end of your bar, so you can see what
 comes from your gear.
+
+![RealStats: raid tab, tooltip with gear and flask share](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-raid-tooltip.jpg)
 
 ## Performance & stability
 
