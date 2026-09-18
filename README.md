@@ -45,16 +45,11 @@ comes from your gear.
 * The gear calculation only runs when you press *Calculate*.
 * Values that WoW 12.x hides ("secret values") are handled without Lua errors.
 * More than 220 automated checks run before every release.
-* Measured in game: *follows with the first release* (average CPU per frame during a
-  Mythic+ key, highest sample, memory).
-* Check it yourself: `/realstats perf`
 
-## Commands
+## Usage
 
-* `/realstats` show / hide
-* `/realstats dock` dock to the character window or float freely (shift + drag)
-* `/realstats lock`, `/realstats scale <0.5-3>`, `/realstats reset`
-* `/realstats perf` CPU and memory, `/realstats perf start|stop` record a measurement run
+Open the character window – RealStats docks next to it. The arrow at its edge
+collapses and expands it. No commands, no settings.
 
 The window freezes during combat, so procs do not make the bars jump.
 

@@ -18,12 +18,8 @@
 -- Zwei Reiter: Mythic+ und Raid. Die Besten verteilen ihre Werte je nach
 -- Inhalt unterschiedlich, deshalb hat jeder Reiter eigene Zielwerte.
 --
--- /realstats          Fenster ein-/ausblenden
--- /realstats dock     am Charakterfenster andocken / frei schweben
--- /realstats lock     Position sperren
--- /realstats scale X  Größe (0.5 - 3)
--- /realstats export   Ausrüstung + Taschen für die Auswertung speichern
--- /realstats reset    Position und Größe zurücksetzen
+-- Keine Befehle, kein Optionsmenü: Das Fenster hängt am Charakterfenster und
+-- lässt sich mit dem Pfeil einklappen. Mehr braucht es nicht.
 -------------------------------------------------------------------------------
 
 local ADDON_NAME, ns = ...
@@ -90,31 +86,8 @@ if GetLocale() == "deDE" then
         "Auf deine Summe umgerechnet, damit das Ziel zu deinem Itemlevel passt."
     L["Only shown as a guide line; the best players barely use it."] =
         "Nur als Orientierungsstrich; die Besten setzen kaum darauf."
-    L["Shift + left click: move"] = "Umschalt + Linksklick: verschieben"
-    L["shown."]  = "eingeblendet."
-    L["hidden."] = "ausgeblendet."
-    L["position locked."]   = "Position gesperrt."
-    L["position unlocked."] = "Position entsperrt."
-    L["reset."] = "zurückgesetzt."
-    L["Commands: /realstats | dock | lock | scale <number> | export | reset | perf [start|stop]"] =
-        "Befehle: /realstats | dock | lock | scale <Zahl> | export | reset | perf [start|stop]"
-    L["Blizzard's addon profiler is not available."] = "Blizzards Addon-Messung ist nicht verfügbar."
-    L["CPU per frame - session: %s, recent: %s, peak: %s"] = "CPU pro Bild - Sitzung: %s, zuletzt: %s, Spitze: %s"
-    L["Share of all addons: %.2f %%"] = "Anteil an allen Addons: %.2f %%"
-    L["Memory: %.0f KB"] = "Speicher: %.0f KB"
-    L["Percent = share of one frame at 60 fps."] = "Prozent = Anteil an einem Bild bei 60 fps."
-    L["A measurement is already running."] = "Es läuft schon eine Messung."
-    L["Measurement started. Play normally, then /realstats perf stop."] =
-        "Messung gestartet. Normal spielen, danach /realstats perf stop."
-    L["No measurement is running."] = "Es läuft keine Messung."
-    L["Measurement saved: %d s, CPU average %s, highest %s."] =
-        "Messung gespeichert: %d s, CPU Durchschnitt %s, höchster Wert %s."
     L["Click: expand"]   = "Klick: ausklappen"
     L["Click: collapse"] = "Klick: einklappen"
-    L["docked to the character window."] = "am Charakterfenster angedockt."
-    L["floating window (shift + drag to move)."] = "freies Fenster (Umschalt + Ziehen zum Verschieben)."
-    L["snapshot: %d equipped, %d in bags. Saved on the next /reload."] =
-        "Schnappschuss: %d angelegt, %d in den Taschen. Wird beim nächsten /reload gespeichert."
 end
 
 -------------------------------------------------------------------------------
@@ -180,9 +153,6 @@ local function db()
     return RealStatsDB
 end
 
-local function Print(msg)
-    DEFAULT_CHAT_FRAME:AddMessage("|cff66ccffRealStats|r: " .. msg)
-end
 
 -------------------------------------------------------------------------------
 -- Werte aus dem Spiel
@@ -335,7 +305,8 @@ end
 -------------------------------------------------------------------------------
 local function StartDrag()
     local s = db()
-    if s.docked or s.locked or not IsShiftKeyDown() then return end
+    -- Verschieben nur, wenn es kein Charakterfenster zum Andocken gibt
+    if (s.docked and (PaperDollFrame or CharacterFrame)) or s.locked or not IsShiftKeyDown() then return end
     frame:StartMoving()
     frame.isMoving = true
 end
@@ -822,78 +793,8 @@ local function CreateMainFrame()
     frame.footer:SetPoint("RIGHT", -PAD, 0)
     frame.footer:SetJustifyH("LEFT")
 
-    frame:SetScript("OnEnter", function(self)
-        GameTooltip:SetOwner(self, "ANCHOR_NONE")
-        GameTooltip:ClearAllPoints()
-        GameTooltip:SetPoint("TOPLEFT", self, "TOPRIGHT", 6, 0)
-        GameTooltip:AddLine("RealStats", 1, 0.82, 0)
-        GameTooltip:AddLine(L["Shift + left click: move"], 0.6, 0.6, 0.6)
-        GameTooltip:Show()
-    end)
-    frame:SetScript("OnLeave", function() GameTooltip:Hide() end)
     -- Öffnet sich mit dem Charakterfenster: dann die aktuellen Werte zeigen.
     frame:SetScript("OnShow", QueueUpdate)
-end
-
--------------------------------------------------------------------------------
--- Slash-Befehle
--------------------------------------------------------------------------------
-SLASH_REALSTATS1 = "/realstats"
-SlashCmdList["REALSTATS"] = function(input)
-    local s = db()
-    local command, argument = strsplit(" ", strtrim(input or ""), 2)
-    command = (command or ""):lower()
-
-    if command == "" then
-        s.hidden = not s.hidden
-        ApplySettings()
-        if not s.hidden then Update() end
-        Print(s.hidden and L["hidden."] or L["shown."])
-    elseif command == "dock" then
-        s.docked = not s.docked
-        ApplySettings()
-        Update()                -- Höhe hängt am Andocken
-        Print(s.docked and L["docked to the character window."] or L["floating window (shift + drag to move)."])
-
-    elseif command == "lock" then
-        s.locked = not s.locked
-        Print(s.locked and L["position locked."] or L["position unlocked."])
-    elseif command == "scale" then
-        local value = tonumber(argument)
-        if value and value >= 0.5 and value <= 3 then
-            s.scale = value
-            ApplySettings()
-        end
-    elseif command == "export" then
-        local snap = ns.TakeSnapshot and ns.TakeSnapshot()
-        if snap then
-            Print(string.format(L["snapshot: %d equipped, %d in bags. Saved on the next /reload."],
-                #snap.equipped, #snap.bags))
-        end
-
-    elseif command == "perf" then
-        local sub, label = strsplit(" ", argument or "", 2)
-        sub = (sub or ""):lower()
-        if not ns.Perf then return end
-        if sub == "start" then
-            ns.Perf.Start(Print, L, label or "")
-        elseif sub == "stop" then
-            ns.Perf.Stop(Print, L)
-        else
-            ns.Perf.Report(Print, L)
-        end
-
-    elseif command == "buffs" then
-        if ns.DebugBuffs then ns.DebugBuffs(Print) end
-
-    elseif command == "reset" then
-        s.point, s.x, s.y, s.scale, s.locked, s.hidden, s.docked, s.collapsed =
-            DEFAULTS.point, DEFAULTS.x, DEFAULTS.y, DEFAULTS.scale, false, false, true, false
-        ApplySettings()
-        Print(L["reset."])
-    else
-        Print(L["Commands: /realstats | dock | lock | scale <number> | export | reset | perf [start|stop]"])
-    end
 end
 
 -------------------------------------------------------------------------------
@@ -923,14 +824,15 @@ RegisterLive()
 events:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" then
         if arg1 ~= ADDON_NAME then return end
-        db()
+        -- Frühere Einstellungen (Befehle gibt es nicht mehr) auf den festen Stand bringen
+        local s = db()
+        s.docked, s.hidden, s.locked, s.scale = true, false, false, 1.0
         CreateMainFrame()
         CreateToggle()
         HookCharacterWindow()
         ApplySettings()
 
     elseif event == "PLAYER_LOGOUT" then
-        if ns.Perf then ns.Perf.OnLogout() end
         if ns.TakeSnapshot then ns.TakeSnapshot() end
 
     elseif event == "PLAYER_REGEN_DISABLED" then

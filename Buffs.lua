@@ -100,39 +100,6 @@ local function TooltipStats(auraInstanceID)
     return stats
 end
 
--- /realstats buffs: zeigt im Chat, was RealStats in jedem Buff sieht.
-function ns.DebugBuffs(print)
-    if not (C_UnitAuras and C_UnitAuras.GetAuraDataByIndex) then
-        print("C_UnitAuras.GetAuraDataByIndex fehlt"); return
-    end
-    if C_Secrets and C_Secrets.ShouldAurasBeSecret and C_Secrets.ShouldAurasBeSecret() then
-        print("Auren sind gerade geheim (C_Secrets.ShouldAurasBeSecret)"); return
-    end
-    for index = 1, 40 do
-        local aura = C_UnitAuras.GetAuraDataByIndex("player", index, "HELPFUL")
-        if not aura then break end
-        local function show(v)
-            if IsSecret(v) then return "GEHEIM" end
-            return tostring(v)
-        end
-        print(string.format("%d: %s id=%s dauer=%s points=%s", index, show(aura.name), show(aura.spellId),
-            show(aura.duration), show(aura.points and aura.points[1])))
-        if C_TooltipInfo and C_TooltipInfo.GetUnitBuffByAuraInstanceID then
-            local data = C_TooltipInfo.GetUnitBuffByAuraInstanceID("player", aura.auraInstanceID, "HELPFUL")
-            for i, line in ipairs(data and data.lines or {}) do
-                if i > 1 and line.leftText and line.leftText ~= "" then
-                    local found = ns.ParseStatLine(line.leftText)
-                    local parts = {}
-                    for k, v in pairs(found) do parts[#parts + 1] = k .. "=" .. v end
-                    print("    \"" .. show(line.leftText) .. "\" -> " .. (#parts > 0 and table.concat(parts, ", ") or "-"))
-                end
-            end
-        else
-            print("    GetUnitBuffByAuraInstanceID fehlt")
-        end
-    end
-end
-
 -- { crit = n, haste = n, mastery = n, versatility = n, list = { {name, spellId, stat, amount}, ... } }
 function ns.FixedBuffs()
     local result = { crit = 0, haste = 0, mastery = 0, versatility = 0, list = {} }

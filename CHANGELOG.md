@@ -13,6 +13,6 @@ Erste Version.
   anlegen und als Set im Ausrüstungsmanager speichern (erst nach dem Anlegen).
   Kampfweise bleibt: Zweihand, Einhand + Schild/Nebenhand, zwei Waffen, Fernkampf.
 * Gesperrte („geheime") Werte aus WoW 12.x ohne Lua-Fehler.
-* Leistungsmessung: `/realstats perf`, `perf start|stop`.
+* Keine Befehle und keine Einstellungen: Das Fenster hängt am Charakterfenster.
 * Fläschchen und Essen als lila Anteil im Balken.
 * Angedockt am Charakterfenster, einklappbar; im Kampf eingefroren.

@@ -6,7 +6,6 @@
 -- und was in den Taschen liegt -- mit den Werten, die das Spiel selbst für das
 -- jeweilige Itemlevel meldet. Kopieren ist damit nicht mehr nötig.
 --
--- /realstats export   Schnappschuss sofort nehmen (wirksam nach /reload)
 -------------------------------------------------------------------------------
 
 local ADDON_NAME, ns = ...
