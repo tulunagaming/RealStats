@@ -44,7 +44,7 @@ comes from your gear.
   (tested: 1000 buff changes -> 1 refresh).
 * The gear calculation only runs when you press *Calculate*.
 * Values that WoW 12.x hides ("secret values") are handled without Lua errors.
-* More than 220 automated checks run before every release.
+* More than 200 automated checks run before every release.
 
 ## Usage
 
