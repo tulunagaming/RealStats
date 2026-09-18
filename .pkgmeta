@@ -1,7 +1,12 @@
 package-as: RealStats
 
-enable-nolib-creation: no
-
+# Nur das Addon ins Paket: Bilder und Doku bleiben im Repository.
 ignore:
   - .github
   - .pkgmeta
+  - docs
+  - README.md
+
+manual-changelog:
+  filename: CHANGELOG.md
+  markup-type: markdown
