@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.1
+
+* Zielwerte vom 23.09.2026: Wochenlauf über alle 40 Spezialisierungen in Mythic+ und Raid.
+  Die Verteilungen sind gegenüber der Vorwoche weitgehend stabil; deutlichere Verschiebungen
+  gab es bei Bewahrungs-Rufer, Windwandler-Mönch, Überlebens-Jäger, Disziplin-Priester und Feuer-Magier.
+* Median-Itemlevel der Besten 323 -> 325, die Summen-Zeile steigt entsprechend mit.
+
 ## 0.1.0
 
 Erste Version.
