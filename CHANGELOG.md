@@ -1,5 +1,12 @@
 # Changelog
 
+## 0.1.2
+
+* Zielwerte vom 26.09.2026: alle 40 Spezialisierungen in Mythic+ und Raid, 7890 ausgewertete Spieler.
+  Deutlichere Verschiebungen bei Unheilig-Todesritter (Raid), Rachsucht-Dämonenjäger, Disziplin-Priester,
+  Wächter-Druide und Überleben-Jäger; der Rest ist gegenüber der Vorwoche stabil.
+* Median-Itemlevel der Besten 325 -> 326, die Summen-Zeile steigt entsprechend mit.
+
 ## 0.1.1
 
 * Zielwerte vom 23.09.2026: Wochenlauf über alle 40 Spezialisierungen in Mythic+ und Raid.
