@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.0.0
+
+Erste stabile Version. Seit 0.1.0 lief das Addon vier Wochen ohne Fehlerbericht,
+die Zielwerte werden woechentlich fuer alle 40 Spezialisierungen aktualisiert,
+und die Pruefungen umfassen inzwischen 220 Faelle.
+
+* Inhaltlich wie 0.1.3 - nur die Versionsnummer sagt jetzt, dass das Addon
+  seinen vollen Funktionsumfang erreicht hat.
+
 ## 0.1.3
 
 * Tooltip: neue Zeile "Bis zum Zielbereich" - wie viel du mindestens umschichten musst,
