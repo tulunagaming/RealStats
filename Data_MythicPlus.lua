@@ -1,5 +1,5 @@
 -- Automatisch erzeugt (Wochenlauf, tools/update_targets.py) -- nicht von Hand aendern.
--- Quelle: Warcraft Logs · Top-Logs Mythic+, 40 Spezialisierungen, erzeugt 2026-10-01 19:24.
+-- Quelle: Warcraft Logs · Top-Logs Mythic+, 40 Spezialisierungen, erzeugt 2026-10-01 22:50.
 
 local _, ns = ...
 ns.TARGETS = ns.TARGETS or {}

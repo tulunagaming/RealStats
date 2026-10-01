@@ -1,5 +1,5 @@
 -- Automatisch erzeugt (Wochenlauf, tools/update_targets.py) -- nicht von Hand aendern.
--- Quelle: Warcraft Logs · Top-Logs Raid (mythisch), 40 Spezialisierungen, erzeugt 2026-10-01 19:24.
+-- Quelle: Warcraft Logs · Top-Logs Raid (mythisch), 40 Spezialisierungen, erzeugt 2026-10-01 22:50.
 
 local _, ns = ...
 ns.TARGETS = ns.TARGETS or {}
@@ -292,40 +292,40 @@ set(577, "raid", {
 
 -- DemonHunter Vengeance
 set(581, "raid", {
-    date = "2026-09-26", players = 86, ilvl = 324,
+    date = "2026-10-01", players = 105, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3133, mean = 3117, p25 = 3051, p75 = 3198 },
-    share = { crit = 0.3274, haste = 0.3952, mastery = 0.1523, versatility = 0.1251 },
+    total = { median = 3158, mean = 3133, p25 = 3054, p75 = 3204 },
+    share = { crit = 0.3189, haste = 0.4048, mastery = 0.1561, versatility = 0.1202 },
 })
 
 -- Evoker Devastation
 set(1467, "raid", {
-    date = "2026-09-26", players = 130, ilvl = 326,
+    date = "2026-10-01", players = 132, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3112, mean = 3104, p25 = 3037, p75 = 3172 },
-    share = { crit = 0.4258, haste = 0.2398, mastery = 0.2693, versatility = 0.0651 },
+    total = { median = 3140, mean = 3127, p25 = 3049, p75 = 3193 },
+    share = { crit = 0.4297, haste = 0.2424, mastery = 0.2728, versatility = 0.0550 },
 })
 
 -- Evoker Preservation
 set(1468, "raid", {
-    date = "2026-09-26", players = 187, ilvl = 326,
+    date = "2026-10-01", players = 186, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3083, mean = 3088, p25 = 3021, p75 = 3154 },
-    share = { crit = 0.3901, haste = 0.1727, mastery = 0.3911, versatility = 0.0461 },
+    total = { median = 3098, mean = 3101, p25 = 3033, p75 = 3172 },
+    share = { crit = 0.3877, haste = 0.1775, mastery = 0.3892, versatility = 0.0456 },
 })
 
 -- Evoker Augmentation
 set(1473, "raid", {
-    date = "2026-09-26", players = 115, ilvl = 327,
+    date = "2026-10-01", players = 107, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3211, mean = 3190, p25 = 3132, p75 = 3245 },
-    share = { crit = 0.3098, haste = 0.1500, mastery = 0.5087, versatility = 0.0316 },
+    total = { median = 3223, mean = 3208, p25 = 3159, p75 = 3266 },
+    share = { crit = 0.3089, haste = 0.1466, mastery = 0.5132, versatility = 0.0314 },
 })
 
 -- DemonHunter Devourer
 set(1480, "raid", {
-    date = "2026-09-26", players = 147, ilvl = 326,
+    date = "2026-10-01", players = 157, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3132, mean = 3125, p25 = 3044, p75 = 3200 },
-    share = { crit = 0.3130, haste = 0.2826, mastery = 0.3710, versatility = 0.0334 },
+    total = { median = 3153, mean = 3139, p25 = 3068, p75 = 3208 },
+    share = { crit = 0.3072, haste = 0.2839, mastery = 0.3758, versatility = 0.0331 },
 })

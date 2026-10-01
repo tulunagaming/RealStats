@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.0.1
+
+* Zielwerte vom 01.10.2026: 80 Abrufe ueber alle Spezialisierungen in Mythic+ und Raid, 7926 ausgewertete Spieler (kleinste Gruppe 33).
+* Keine Verteilung hat sich um mehr als 2 Prozentpunkte verschoben.
+
 ## 1.0.0
 
 Erste stabile Version. Seit 0.1.0 lief das Addon vier Wochen ohne Fehlerbericht,
