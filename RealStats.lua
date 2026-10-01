@@ -80,6 +80,7 @@ if GetLocale() == "deDE" then
         "Lila Anteil: feste Buffs wie Fläschchen und Essen. Bei den Besten sind sie ebenfalls enthalten."
     L["Target"]            = "Ziel"
     L["Target range"]      = "Zielbereich"
+    L["To the target range"] = "Bis zum Zielbereich"
     L["Share among the best"] = "Anteil bei den Besten"
     L["Your share"]        = "Dein Anteil"
     L["Scaled to your stat total, so the target fits your item level."] =
@@ -191,6 +192,16 @@ local function CurrentSpecID()
     return (GetSpecializationInfo(index))
 end
 
+-- Wie weit ist der Wert vom Zielbereich entfernt? Gerundet und vorzeichenbehaftet:
+-- negativ = so viel abgeben, positiv = so viel dazu, 0 = schon im Ziel.
+-- Die Zahl neben dem Balken nennt dagegen den Abstand zum Ziel selbst.
+function ns.ToRange(info)
+    if not info or info.status == "guide" then return 0 end
+    if info.current > info.high then return -math.floor(info.current - info.high + 0.5) end
+    if info.current < info.low  then return  math.floor(info.low - info.current + 0.5) end
+    return 0
+end
+
 -- Liefert pro Wert: aktuell, Ziel, Zielbereich und Status. Reine Rechnung,
 -- ohne Oberfläche -- damit lässt sie sich außerhalb des Spiels prüfen.
 function ns.Evaluate(values, share)
@@ -281,6 +292,14 @@ local function ShowRowTooltip(row)
     if info.status ~= "guide" then
         GameTooltip:AddDoubleLine(L["Target range"],
             string.format("%d - %d", Round(info.low), Round(info.high)), 0.8, 0.8, 0.8, 1, 1, 1)
+        -- Wie weit fehlt bis in den gruenen Bereich? Die Zeile oben nennt den Abstand
+        -- zum Ziel selbst, hier steht das Mindestmass fuer "im Ziel".
+        local toRange = ns.ToRange(info)
+        if toRange ~= 0 then
+            local c = COLORS[info.status] or { 1, 1, 1 }
+            GameTooltip:AddDoubleLine(L["To the target range"],
+                string.format("%+d", toRange), 0.8, 0.8, 0.8, c[1], c[2], c[3])
+        end
     end
     GameTooltip:AddLine(" ")
     GameTooltip:AddDoubleLine(L["Share among the best"],

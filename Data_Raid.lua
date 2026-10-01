@@ -1,5 +1,5 @@
 -- Automatisch erzeugt (Wochenlauf, tools/update_targets.py) -- nicht von Hand aendern.
--- Quelle: Warcraft Logs · Top-Logs Raid (mythisch), 40 Spezialisierungen, erzeugt 2026-09-26 17:40.
+-- Quelle: Warcraft Logs · Top-Logs Raid (mythisch), 40 Spezialisierungen, erzeugt 2026-10-01 19:24.
 
 local _, ns = ...
 ns.TARGETS = ns.TARGETS or {}
@@ -12,282 +12,282 @@ end
 
 -- Mage Arcane
 set(62, "raid", {
-    date = "2026-09-26", players = 172, ilvl = 326,
+    date = "2026-10-01", players = 171, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3048, mean = 3074, p25 = 3007, p75 = 3090 },
-    share = { crit = 0.2749, haste = 0.3375, mastery = 0.1738, versatility = 0.2138 },
+    total = { median = 3052, mean = 3089, p25 = 3018, p75 = 3105 },
+    share = { crit = 0.2722, haste = 0.3344, mastery = 0.1868, versatility = 0.2067 },
 })
 
 -- Mage Fire
 set(63, "raid", {
-    date = "2026-09-26", players = 75, ilvl = 324,
+    date = "2026-10-01", players = 73, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3048, mean = 3059, p25 = 2992, p75 = 3118 },
-    share = { crit = 0.0700, haste = 0.4375, mastery = 0.2835, versatility = 0.2090 },
+    total = { median = 3079, mean = 3091, p25 = 3035, p75 = 3156 },
+    share = { crit = 0.0745, haste = 0.4401, mastery = 0.2800, versatility = 0.2055 },
 })
 
 -- Mage Frost
 set(64, "raid", {
-    date = "2026-09-26", players = 134, ilvl = 326,
+    date = "2026-10-01", players = 139, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3114, mean = 3124, p25 = 3048, p75 = 3198 },
-    share = { crit = 0.3658, haste = 0.2271, mastery = 0.3247, versatility = 0.0824 },
+    total = { median = 3163, mean = 3152, p25 = 3068, p75 = 3224 },
+    share = { crit = 0.3725, haste = 0.2283, mastery = 0.3208, versatility = 0.0784 },
 })
 
 -- Paladin Holy
 set(65, "raid", {
-    date = "2026-09-26", players = 183, ilvl = 325,
+    date = "2026-10-01", players = 199, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3085, mean = 3086, p25 = 3024, p75 = 3140 },
-    share = { crit = 0.2413, haste = 0.2795, mastery = 0.4286, versatility = 0.0506 },
+    total = { median = 3104, mean = 3111, p25 = 3048, p75 = 3172 },
+    share = { crit = 0.2429, haste = 0.2863, mastery = 0.4230, versatility = 0.0478 },
 })
 
 -- Paladin Protection
 set(66, "raid", {
-    date = "2026-09-26", players = 142, ilvl = 325,
+    date = "2026-10-01", players = 135, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3107, mean = 3109, p25 = 3047, p75 = 3154 },
-    share = { crit = 0.3825, haste = 0.3597, mastery = 0.1728, versatility = 0.0850 },
+    total = { median = 3130, mean = 3144, p25 = 3062, p75 = 3175 },
+    share = { crit = 0.3820, haste = 0.3599, mastery = 0.1749, versatility = 0.0831 },
 })
 
 -- Paladin Retribution
 set(70, "raid", {
-    date = "2026-09-26", players = 147, ilvl = 326,
+    date = "2026-10-01", players = 155, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3173, mean = 3172, p25 = 3136, p75 = 3225 },
-    share = { crit = 0.3313, haste = 0.2791, mastery = 0.3586, versatility = 0.0310 },
+    total = { median = 3193, mean = 3188, p25 = 3144, p75 = 3230 },
+    share = { crit = 0.3404, haste = 0.2743, mastery = 0.3541, versatility = 0.0313 },
 })
 
 -- Warrior Arms
 set(71, "raid", {
-    date = "2026-09-26", players = 144, ilvl = 327,
+    date = "2026-10-01", players = 145, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3140, mean = 3123, p25 = 3048, p75 = 3179 },
-    share = { crit = 0.4226, haste = 0.3494, mastery = 0.1946, versatility = 0.0334 },
+    total = { median = 3147, mean = 3128, p25 = 3069, p75 = 3187 },
+    share = { crit = 0.4224, haste = 0.3483, mastery = 0.1963, versatility = 0.0330 },
 })
 
 -- Warrior Fury
 set(72, "raid", {
-    date = "2026-09-26", players = 108, ilvl = 325,
+    date = "2026-10-01", players = 113, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3330, mean = 3321, p25 = 3249, p75 = 3386 },
-    share = { crit = 0.2768, haste = 0.3503, mastery = 0.3373, versatility = 0.0356 },
+    total = { median = 3356, mean = 3339, p25 = 3257, p75 = 3400 },
+    share = { crit = 0.2724, haste = 0.3491, mastery = 0.3474, versatility = 0.0312 },
 })
 
 -- Warrior Protection
 set(73, "raid", {
-    date = "2026-09-26", players = 109, ilvl = 325,
+    date = "2026-10-01", players = 107, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3121, mean = 3104, p25 = 3027, p75 = 3172 },
-    share = { crit = 0.3455, haste = 0.4063, mastery = 0.1642, versatility = 0.0841 },
+    total = { median = 3132, mean = 3116, p25 = 3040, p75 = 3174 },
+    share = { crit = 0.3491, haste = 0.3949, mastery = 0.1729, versatility = 0.0830 },
 })
 
 -- Druid Balance
 set(102, "raid", {
-    date = "2026-09-26", players = 179, ilvl = 327,
+    date = "2026-10-01", players = 175, ilvl = 328,
     difficulty = "mythic",
-    total = { median = 3138, mean = 3137, p25 = 3046, p75 = 3209 },
-    share = { crit = 0.2853, haste = 0.2806, mastery = 0.3997, versatility = 0.0345 },
+    total = { median = 3157, mean = 3163, p25 = 3065, p75 = 3226 },
+    share = { crit = 0.2840, haste = 0.2863, mastery = 0.3949, versatility = 0.0349 },
 })
 
 -- Druid Feral
 set(103, "raid", {
-    date = "2026-09-26", players = 96, ilvl = 326,
+    date = "2026-10-01", players = 108, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3152, mean = 3146, p25 = 3108, p75 = 3177 },
-    share = { crit = 0.2697, haste = 0.3134, mastery = 0.3681, versatility = 0.0488 },
+    total = { median = 3168, mean = 3164, p25 = 3136, p75 = 3188 },
+    share = { crit = 0.2701, haste = 0.3102, mastery = 0.3669, versatility = 0.0528 },
 })
 
 -- Druid Guardian
 set(104, "raid", {
-    date = "2026-09-26", players = 89, ilvl = 326,
+    date = "2026-10-01", players = 96, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3152, mean = 3147, p25 = 3074, p75 = 3210 },
-    share = { crit = 0.2710, haste = 0.4119, mastery = 0.1538, versatility = 0.1633 },
+    total = { median = 3168, mean = 3166, p25 = 3092, p75 = 3222 },
+    share = { crit = 0.2699, haste = 0.4151, mastery = 0.1523, versatility = 0.1627 },
 })
 
 -- Druid Restoration
 set(105, "raid", {
-    date = "2026-09-26", players = 159, ilvl = 325,
+    date = "2026-10-01", players = 162, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3192, mean = 3175, p25 = 3107, p75 = 3234 },
-    share = { crit = 0.0729, haste = 0.5197, mastery = 0.3445, versatility = 0.0629 },
+    total = { median = 3208, mean = 3195, p25 = 3135, p75 = 3248 },
+    share = { crit = 0.0668, haste = 0.5202, mastery = 0.3489, versatility = 0.0641 },
 })
 
 -- DeathKnight Blood
 set(250, "raid", {
-    date = "2026-09-26", players = 158, ilvl = 326,
+    date = "2026-10-01", players = 149, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3174, mean = 3174, p25 = 3140, p75 = 3207 },
-    share = { crit = 0.3567, haste = 0.3660, mastery = 0.1642, versatility = 0.1132 },
+    total = { median = 3187, mean = 3182, p25 = 3149, p75 = 3224 },
+    share = { crit = 0.3633, haste = 0.3550, mastery = 0.1663, versatility = 0.1154 },
 })
 
 -- DeathKnight Frost
 set(251, "raid", {
-    date = "2026-09-26", players = 148, ilvl = 326,
+    date = "2026-10-01", players = 158, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3204, mean = 3208, p25 = 3171, p75 = 3247 },
-    share = { crit = 0.4225, haste = 0.1797, mastery = 0.3665, versatility = 0.0313 },
+    total = { median = 3210, mean = 3212, p25 = 3178, p75 = 3247 },
+    share = { crit = 0.4249, haste = 0.1775, mastery = 0.3663, versatility = 0.0313 },
 })
 
 -- DeathKnight Unholy
 set(252, "raid", {
-    date = "2026-09-26", players = 170, ilvl = 326,
+    date = "2026-10-01", players = 184, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3170, mean = 3170, p25 = 3136, p75 = 3206 },
-    share = { crit = 0.4218, haste = 0.1734, mastery = 0.3731, versatility = 0.0317 },
+    total = { median = 3186, mean = 3170, p25 = 3153, p75 = 3216 },
+    share = { crit = 0.4134, haste = 0.1971, mastery = 0.3580, versatility = 0.0315 },
 })
 
 -- Hunter BeastMastery
 set(253, "raid", {
-    date = "2026-09-26", players = 149, ilvl = 326,
+    date = "2026-10-01", players = 158, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3200, mean = 3206, p25 = 3164, p75 = 3237 },
-    share = { crit = 0.3712, haste = 0.1895, mastery = 0.4014, versatility = 0.0379 },
+    total = { median = 3214, mean = 3226, p25 = 3174, p75 = 3269 },
+    share = { crit = 0.3691, haste = 0.1859, mastery = 0.3986, versatility = 0.0463 },
 })
 
 -- Hunter Marksmanship
 set(254, "raid", {
-    date = "2026-09-26", players = 133, ilvl = 327,
+    date = "2026-10-01", players = 130, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3376, mean = 3380, p25 = 3348, p75 = 3398 },
-    share = { crit = 0.4935, haste = 0.0710, mastery = 0.3448, versatility = 0.0908 },
+    total = { median = 3384, mean = 3400, p25 = 3366, p75 = 3418 },
+    share = { crit = 0.4974, haste = 0.0738, mastery = 0.3426, versatility = 0.0862 },
 })
 
 -- Hunter Survival
 set(255, "raid", {
-    date = "2026-09-26", players = 74, ilvl = 325,
+    date = "2026-10-01", players = 82, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3188, mean = 3184, p25 = 3094, p75 = 3266 },
-    share = { crit = 0.3077, haste = 0.2481, mastery = 0.4140, versatility = 0.0302 },
+    total = { median = 3228, mean = 3209, p25 = 3116, p75 = 3274 },
+    share = { crit = 0.3018, haste = 0.2553, mastery = 0.4121, versatility = 0.0308 },
 })
 
 -- Priest Discipline
 set(256, "raid", {
-    date = "2026-09-26", players = 118, ilvl = 325,
+    date = "2026-10-01", players = 123, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3222, mean = 3225, p25 = 3173, p75 = 3290 },
-    share = { crit = 0.1610, haste = 0.5498, mastery = 0.2287, versatility = 0.0605 },
+    total = { median = 3228, mean = 3230, p25 = 3173, p75 = 3288 },
+    share = { crit = 0.1591, haste = 0.5518, mastery = 0.2266, versatility = 0.0625 },
 })
 
 -- Priest Holy
 set(257, "raid", {
-    date = "2026-09-26", players = 194, ilvl = 324,
+    date = "2026-10-01", players = 202, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3062, mean = 3067, p25 = 2999, p75 = 3130 },
-    share = { crit = 0.3968, haste = 0.2036, mastery = 0.3326, versatility = 0.0670 },
+    total = { median = 3077, mean = 3099, p25 = 3026, p75 = 3179 },
+    share = { crit = 0.3952, haste = 0.2077, mastery = 0.3296, versatility = 0.0675 },
 })
 
 -- Priest Shadow
 set(258, "raid", {
-    date = "2026-09-26", players = 149, ilvl = 327,
+    date = "2026-10-01", players = 143, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3093, mean = 3114, p25 = 3029, p75 = 3186 },
-    share = { crit = 0.2762, haste = 0.3007, mastery = 0.3891, versatility = 0.0339 },
+    total = { median = 3156, mean = 3148, p25 = 3054, p75 = 3210 },
+    share = { crit = 0.2758, haste = 0.3023, mastery = 0.3881, versatility = 0.0338 },
 })
 
 -- Rogue Assassination
 set(259, "raid", {
-    date = "2026-09-26", players = 171, ilvl = 326,
+    date = "2026-10-01", players = 160, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3248, mean = 3255, p25 = 3186, p75 = 3336 },
-    share = { crit = 0.4265, haste = 0.3149, mastery = 0.2132, versatility = 0.0454 },
+    total = { median = 3311, mean = 3296, p25 = 3222, p75 = 3361 },
+    share = { crit = 0.4255, haste = 0.3068, mastery = 0.2179, versatility = 0.0498 },
 })
 
 -- Rogue Outlaw
 set(260, "raid", {
-    date = "2026-09-26", players = 122, ilvl = 324,
+    date = "2026-10-01", players = 114, ilvl = 325,
     difficulty = "mythic",
-    total = { median = 3148, mean = 3128, p25 = 3050, p75 = 3196 },
-    share = { crit = 0.4358, haste = 0.3300, mastery = 0.0557, versatility = 0.1786 },
+    total = { median = 3164, mean = 3142, p25 = 3096, p75 = 3202 },
+    share = { crit = 0.4419, haste = 0.3253, mastery = 0.0546, versatility = 0.1781 },
 })
 
 -- Rogue Subtlety
 set(261, "raid", {
-    date = "2026-09-26", players = 159, ilvl = 326,
+    date = "2026-10-01", players = 161, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3196, mean = 3195, p25 = 3170, p75 = 3221 },
-    share = { crit = 0.1859, haste = 0.2352, mastery = 0.3916, versatility = 0.1872 },
+    total = { median = 3209, mean = 3209, p25 = 3184, p75 = 3237 },
+    share = { crit = 0.1945, haste = 0.2385, mastery = 0.3922, versatility = 0.1748 },
 })
 
 -- Shaman Elemental
 set(262, "raid", {
-    date = "2026-09-26", players = 150, ilvl = 326,
+    date = "2026-10-01", players = 161, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3004, mean = 3022, p25 = 2976, p75 = 3046 },
-    share = { crit = 0.3617, haste = 0.2567, mastery = 0.3351, versatility = 0.0465 },
+    total = { median = 3017, mean = 3035, p25 = 2992, p75 = 3064 },
+    share = { crit = 0.3654, haste = 0.2539, mastery = 0.3388, versatility = 0.0419 },
 })
 
 -- Shaman Enhancement
 set(263, "raid", {
-    date = "2026-09-26", players = 107, ilvl = 325,
+    date = "2026-10-01", players = 106, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3088, mean = 3078, p25 = 3032, p75 = 3127 },
-    share = { crit = 0.2867, haste = 0.3145, mastery = 0.3661, versatility = 0.0327 },
+    total = { median = 3120, mean = 3102, p25 = 3070, p75 = 3147 },
+    share = { crit = 0.2979, haste = 0.3109, mastery = 0.3592, versatility = 0.0320 },
 })
 
 -- Shaman Restoration
 set(264, "raid", {
-    date = "2026-09-26", players = 200, ilvl = 326,
+    date = "2026-10-01", players = 214, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3010, mean = 3025, p25 = 2964, p75 = 3073 },
-    share = { crit = 0.4634, haste = 0.2597, mastery = 0.0991, versatility = 0.1778 },
+    total = { median = 3022, mean = 3037, p25 = 2982, p75 = 3086 },
+    share = { crit = 0.4631, haste = 0.2618, mastery = 0.0942, versatility = 0.1809 },
 })
 
 -- Warlock Affliction
 set(265, "raid", {
-    date = "2026-09-26", players = 150, ilvl = 326,
+    date = "2026-10-01", players = 155, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3106, mean = 3115, p25 = 3032, p75 = 3183 },
-    share = { crit = 0.3593, haste = 0.3891, mastery = 0.1929, versatility = 0.0586 },
+    total = { median = 3142, mean = 3140, p25 = 3041, p75 = 3200 },
+    share = { crit = 0.3582, haste = 0.3883, mastery = 0.1908, versatility = 0.0628 },
 })
 
 -- Warlock Demonology
 set(266, "raid", {
-    date = "2026-09-26", players = 155, ilvl = 326,
+    date = "2026-10-01", players = 165, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3062, mean = 3069, p25 = 3019, p75 = 3108 },
-    share = { crit = 0.4070, haste = 0.2948, mastery = 0.2380, versatility = 0.0602 },
+    total = { median = 3076, mean = 3090, p25 = 3022, p75 = 3146 },
+    share = { crit = 0.4029, haste = 0.2961, mastery = 0.2371, versatility = 0.0639 },
 })
 
 -- Warlock Destruction
 set(267, "raid", {
-    date = "2026-09-26", players = 117, ilvl = 326,
+    date = "2026-10-01", players = 119, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3045, mean = 3072, p25 = 3017, p75 = 3139 },
-    share = { crit = 0.3501, haste = 0.3029, mastery = 0.2913, versatility = 0.0557 },
+    total = { median = 3062, mean = 3088, p25 = 3033, p75 = 3140 },
+    share = { crit = 0.3535, haste = 0.2999, mastery = 0.2856, versatility = 0.0609 },
 })
 
 -- Monk Brewmaster
 set(268, "raid", {
-    date = "2026-09-26", players = 109, ilvl = 325,
+    date = "2026-10-01", players = 100, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3175, mean = 3189, p25 = 3106, p75 = 3235 },
-    share = { crit = 0.4208, haste = 0.0776, mastery = 0.2440, versatility = 0.2576 },
+    total = { median = 3176, mean = 3180, p25 = 3119, p75 = 3223 },
+    share = { crit = 0.4207, haste = 0.0816, mastery = 0.2413, versatility = 0.2564 },
 })
 
 -- Monk Windwalker
 set(269, "raid", {
-    date = "2026-09-26", players = 129, ilvl = 327,
+    date = "2026-10-01", players = 120, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3183, mean = 3180, p25 = 3159, p75 = 3203 },
-    share = { crit = 0.2811, haste = 0.2985, mastery = 0.3886, versatility = 0.0317 },
+    total = { median = 3185, mean = 3189, p25 = 3162, p75 = 3214 },
+    share = { crit = 0.2767, haste = 0.3002, mastery = 0.3912, versatility = 0.0319 },
 })
 
 -- Monk Mistweaver
 set(270, "raid", {
-    date = "2026-09-26", players = 135, ilvl = 326,
+    date = "2026-10-01", players = 149, ilvl = 327,
     difficulty = "mythic",
-    total = { median = 3207, mean = 3187, p25 = 3090, p75 = 3258 },
-    share = { crit = 0.3085, haste = 0.5057, mastery = 0.0718, versatility = 0.1140 },
+    total = { median = 3216, mean = 3192, p25 = 3132, p75 = 3261 },
+    share = { crit = 0.3084, haste = 0.5076, mastery = 0.0752, versatility = 0.1088 },
 })
 
 -- DemonHunter Havoc
 set(577, "raid", {
-    date = "2026-09-26", players = 125, ilvl = 326,
+    date = "2026-10-01", players = 108, ilvl = 326,
     difficulty = "mythic",
-    total = { median = 3183, mean = 3182, p25 = 3153, p75 = 3213 },
-    share = { crit = 0.4742, haste = 0.1083, mastery = 0.3862, versatility = 0.0313 },
+    total = { median = 3196, mean = 3200, p25 = 3172, p75 = 3229 },
+    share = { crit = 0.4703, haste = 0.1142, mastery = 0.3838, versatility = 0.0317 },
 })
 
 -- DemonHunter Vengeance

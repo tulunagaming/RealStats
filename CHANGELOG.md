@@ -1,5 +1,16 @@
 # Changelog
 
+## 0.1.3
+
+* Tooltip: neue Zeile "Bis zum Zielbereich" - wie viel du mindestens umschichten musst,
+  damit der Wert gruen wird. Die Zahl am Balken nennt weiterhin den Abstand zum Ziel selbst.
+* Zielwerte vom 01.10.2026: 7904 ausgewertete Spieler ueber alle 40 Spezialisierungen
+  in Mythic+ und Raid (kleinste Gruppe 33). Deutlichere Verschiebungen (ab 2 Prozentpunkten):
+  Disziplin-Priester, Rachsucht-Daemonenjaeger und Gesetzlosigkeit-Schurke (Mythic+),
+  Unheilig-Todesritter (Raid), Braumeister- und Nebelwirker-Moench (Mythic+).
+* Fuer Rachsucht-Daemonenjaeger, Verschlinger-Daemonenjaeger sowie alle drei Rufer-
+  Spezialisierungen gelten im Raid noch die Werte der Vorwoche; sie werden nachgereicht.
+
 ## 0.1.2
 
 * Zielwerte vom 26.09.2026: alle 40 Spezialisierungen in Mythic+ und Raid, 7890 ausgewertete Spieler.
