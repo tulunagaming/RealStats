@@ -44,7 +44,7 @@ Next to the set button: **Back to previous** re-equips what you wore before the
 last change (the items have to be in your bags), and **Save current** stores your
 current gear as the set "RealStats vorher" and as the way back.
 
-![RealStats: gear tab with the suggested changes](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-gear-changes.jpg)
+![RealStats: gear tab with the switches](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-gear-tab.jpg)
 
 ## Fixed buffs
 
@@ -52,7 +52,7 @@ Flasks and food are part of your stats, just like for the best players. Their
 share appears as a purple piece at the end of your bar, so you can see what
 comes from your gear.
 
-![RealStats: raid tab, tooltip with gear and flask share](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-raid-tooltip.jpg)
+![RealStats: tooltip with gear share, flask and the way back into the target range](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-raid-tooltip.jpg)
 
 ## Performance & stability
 
