@@ -1,5 +1,24 @@
 # Changelog
 
+## 1.0.2
+
+Die ersten Rueckmeldungen von Nutzern, umgesetzt.
+
+* Eigenes Symbol in der Addon-Liste statt des Fragezeichens.
+* Andere Addons, die ebenfalls am Charakterfenster andocken, werden nicht mehr
+  ueberlagert: RealStats bleibt am Charakterfenster, der Nachbar rueckt rechts
+  daneben (unterstuetzt die Anmeldung von ClassCodex).
+* Reiter Ausruestung, neu "Tauschen erlaubt": drei Haken dafuer, was der
+  Optimierer anfassen darf - Teile mit Sockelplatz, verzierte Teile, Teile mit
+  niedrigerem Itemlevel. Alle in dieselbe Richtung gedacht (Haken = erlaubt),
+  anfangs leer und je Charakter und Spezialisierung gespeichert.
+  Damit wird auch kein Primaerwert mehr fuer eine schoenere Verteilung geopfert.
+* Reiter Ausruestung, neue Knoepfe: "Zurueck zu vorher" legt wieder an, was vor
+  dem letzten Wechsel angelegt war, "Jetziges sichern" sichert den aktuellen
+  Stand als Set und als Rueckweg.
+* Beim Anlegen wird ein haengen gebliebenes Teil automatisch ein zweites Mal
+  versucht; klappt es trotzdem nicht, nennt die Meldung Platz und Item.
+
 ## 1.0.1
 
 * Zielwerte vom 01.10.2026: 80 Abrufe ueber alle Spezialisierungen in Mythic+ und Raid, 7926 ausgewertete Spieler (kleinste Gruppe 33).

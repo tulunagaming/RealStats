@@ -26,6 +26,24 @@ actually distribute theirs. Docks to the right of the character window.
   Only bound items, at most 2 embellishments, set bonus kept, weapon style kept
   (two-hander, shield, dual wield, ranged), trinkets stay.
 
+### What may be swapped
+
+Three check boxes, all in the same direction: ticked means the optimizer may
+touch it, empty means it stays as it is. Saved per character **and** per
+specialization. All three start empty, which is the careful setting:
+
+* **Items with a socket** – otherwise a socketed item can be replaced by one
+  without, and the gem is lost.
+* **Embellished items** – left alone unless you allow it.
+* **Items with lower item level** – without this tick every swap keeps or
+  raises your item level, so no primary stat is lost for a nicer split.
+
+### Back to what you wore
+
+Next to the set button: **Back to previous** re-equips what you wore before the
+last change (the items have to be in your bags), and **Save current** stores your
+current gear as the set "RealStats vorher" and as the way back.
+
 ![RealStats: gear tab with the suggested changes](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-gear-changes.jpg)
 
 ## Fixed buffs

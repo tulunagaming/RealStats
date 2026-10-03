@@ -9,6 +9,11 @@
 --   * Waffen: gleiche Kampfweise wie jetzt (Zweihand bleibt Zweihand, Schild bleibt
 --     Schild, zwei Waffen bleiben zwei Waffen), nie dasselbe Item zweimal
 --   * Schmuckstücke, Hemd und Wappenrock bleiben unberührt
+--   * drei Schalter aus dem Reiter (opts), alle in Richtung "erlaubt":
+--       sockets      Teile mit Sockelplatz dürfen weichen
+--       embellished  verzierte Teile dürfen getauscht werden
+--       lowerIlvl    niedrigeres Itemlevel ist erlaubt
+--     Ohne opts (alte Aufrufe, Tests) ist alles erlaubt.
 --   * Werte je Item aus dem Item-Tooltip: Grundwerte, Edelsteine und
 --     Verzauberungen wandern mit dem Item
 --
@@ -127,6 +132,7 @@ local function Describe(link)
     local fields = { link:match("item:(%d+):([^:]*):([^:]*):([^:]*):([^:]*):([^:]*)") }
     local gems = 0
     for i = 3, 6 do if fields[i] and fields[i] ~= "" then gems = gems + 1 end end
+    e.sockets = sockets                     -- alle Sockelplätze, auch besetzte
     e.emptySockets = math.max(0, sockets - gems)
     e.enchanted = fields[2] ~= nil and fields[2] ~= ""
     return e
@@ -237,7 +243,28 @@ end
 
 -- gear: aus CollectGear, ratings: aktuelle Wertungen (mit Edelsteinen, Buffs),
 -- share: Zielanteile. Liefert { changes, before, after }.
-function ns.Optimize(gear, ratings, share)
+-- Darf diese Zusammenstellung die aktuelle (cur) ersetzen? Verglichen wird je
+-- Gruppe, damit auch Ringpaare und Waffenhände richtig behandelt werden.
+local function Allowed(o, cur, opts)
+    if not opts or o == cur then return true end
+    if not opts.lowerIlvl and o.ilvl < cur.ilvl then return false end
+    if not opts.sockets and (o.sockets or 0) < (cur.sockets or 0) then return false end
+    if not opts.embellished then
+        local inCur = {}
+        for _, e in ipairs(cur.items) do inCur[e] = true end
+        local inNew = {}
+        for _, e in ipairs(o.items) do
+            inNew[e] = true
+            if e.embellished and not inCur[e] then return false end   -- neu angelegt
+        end
+        for _, e in ipairs(cur.items) do
+            if e.embellished and not inNew[e] then return false end   -- abgelegt
+        end
+    end
+    return true
+end
+
+function ns.Optimize(gear, ratings, share, opts)
     local equipped = gear.equipped
     local setID, setCount = MainSet(equipped)
     local setNeed = setCount >= 4 and 4 or setCount >= 2 and 2 or 0
@@ -252,10 +279,11 @@ function ns.Optimize(gear, ratings, share)
 
     local function option(items, slots)
         local o = { items = items, slots = slots, ilvl = 0, emb = 0, set = 0, swaps = 0,
-                    crit = 0, haste = 0, mastery = 0, versatility = 0 }
+                    sockets = 0, crit = 0, haste = 0, mastery = 0, versatility = 0 }
         for i, e in ipairs(items) do
             for _, k in ipairs(KEYS) do o[k] = o[k] + e[k] end
             o.ilvl = o.ilvl + e.ilvl
+            o.sockets = o.sockets + (e.sockets or 0)
             if e.embellished then o.emb = o.emb + 1 end
             if setID and e.setID == setID then o.set = o.set + 1 end
             if equipped[slots[i]] ~= e then o.swaps = o.swaps + 1 end
@@ -275,8 +303,10 @@ function ns.Optimize(gear, ratings, share)
                 end
             end
             local g = { options = {} }
+            local cur = option({ current }, { s.slot })
             for _, e in ipairs(Prune(list, current)) do
-                table.insert(g.options, option({ e }, { s.slot }))
+                local o = (e == current) and cur or option({ e }, { s.slot })
+                if Allowed(o, cur, opts) then table.insert(g.options, o) end
             end
             table.insert(groups, g)
         end
@@ -293,8 +323,10 @@ function ns.Optimize(gear, ratings, share)
                 if WEAPON_FAMILIES[family][e.equipLoc] then table.insert(list, e) end
             end
             local g = { options = {} }
+            local cur = option({ current }, { slot })
             for _, e in ipairs(Prune(list, current)) do
-                table.insert(g.options, option({ e }, { slot }))
+                local o = (e == current) and cur or option({ e }, { slot })
+                if Allowed(o, cur, opts) then table.insert(g.options, o) end
             end
             table.insert(groups, g)
         end
@@ -313,12 +345,14 @@ function ns.Optimize(gear, ratings, share)
         if not has(keepBoth, r1) then table.insert(keepBoth, 1, r1) end
         if not has(keepBoth, r2) then table.insert(keepBoth, 2, r2) end
         local g = { options = {} }
+        local cur = option({ r1, r2 }, { 11, 12 })
         for i = 1, #keepBoth do
             for j = i + 1, #keepBoth do
                 local a, b = keepBoth[i], keepBoth[j]
                 if a.id ~= b.id then          -- Ringe sind einzigartig anlegbar
                     if a == r2 or b == r1 then a, b = b, a end
-                    table.insert(g.options, option({ a, b }, { 11, 12 }))
+                    local o = option({ a, b }, { 11, 12 })
+                    if Allowed(o, cur, opts) then table.insert(g.options, o) end
                 end
             end
         end
@@ -445,7 +479,7 @@ function ns.EquipChanges(changes, onDone)
     for _, c in ipairs(changes) do
         if c.new.bag == nil then table.insert(queue, 1, c) else table.insert(queue, c) end
     end
-    local index = 0
+    local index, retried = 0, false
     local function step()
         index = index + 1
         local c = queue[index]
@@ -453,6 +487,14 @@ function ns.EquipChanges(changes, onDone)
             local failed = {}
             for _, ch in ipairs(changes) do
                 if ItemID(GetInventoryItemLink("player", ch.slot)) ~= ch.new.id then table.insert(failed, ch) end
+            end
+            -- Einmal nachfassen: manche Tauschvorgaenge brauchen laenger als die
+            -- 0,3 s Pause (Waffenwechsel, volle Taschen, Nachladen des Items).
+            if #failed > 0 and not retried then
+                retried = true
+                queue, index = failed, 0
+                C_Timer.After(0.6, step)
+                return
             end
             if onDone then onDone(#changes - #failed, failed) end
             return

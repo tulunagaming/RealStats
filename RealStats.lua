@@ -46,6 +46,18 @@ if GetLocale() == "deDE" then
     L["Set \"%s\" saved in the equipment manager."] = "Set \"%s\" im Ausrüstungsmanager gespeichert."
     L["Not possible during combat."] = "Im Kampf nicht möglich."
     L["Calculate checks your equipped items and bags."] = "Berechnen prüft deine angelegten Items und deine Taschen."
+    L["May be swapped:"]   = "Tauschen erlaubt:"
+    L["Items with a socket"] = "Teile mit Sockelplatz"
+    L["Embellished items"] = "Verzierte Teile"
+    L["Items with lower item level"] = "Teile mit niedrigerem Itemlevel"
+    L["Back to previous"]  = "Zurück zu vorher"
+    L["Save current"]      = "Jetziges sichern"
+    L["Gear as of %s"]     = "Ausrüstung von %s"
+    L["Equips what you wore before the last change. The items have to be in your bags."] =
+        "Legt wieder an, was du vor dem letzten Wechsel getragen hast. Die Teile müssen in deinen Taschen liegen."
+    L["Saves what you are wearing now as set \"%s\" and as the way back."] =
+        "Sichert, was du gerade trägst, als Set \"%s\" und als Rückweg."
+    L["Your gear already matches the saved state."] = "Deine Ausrüstung entspricht bereits dem gesicherten Stand."
     L["Gear changed - calculate again."] = "Ausrüstung geändert - neu berechnen."
     L["No better combination found - your gear already fits best."] =
         "Keine bessere Kombination gefunden - deine Ausrüstung passt schon am besten."
@@ -55,6 +67,8 @@ if GetLocale() == "deDE" then
     L["%d empty socket(s)"] = "%d leere(r) Sockel"
     L["Equipped %d item(s)."] = "%d Item(s) angelegt."
     L["%d item(s) could not be equipped."] = "%d Item(s) konnten nicht angelegt werden."
+    L["Check your bag space and whether the game asked you something."] =
+        "Prüfe deinen Taschenplatz und ob das Spiel dich etwas gefragt hat."
     L["Only bound items from your bags, at most 2 embellishments, set bonus and weapon style kept, trinkets stay. Gems and enchants move with the item."] =
         "Nur gebundene Items aus deinen Taschen, höchstens 2 Runenverzierungen, Set-Bonus und Kampfweise (Zweihand, Schild, zwei Waffen) bleiben, Schmuckstücke bleiben. Edelsteine und Verzauberungen wandern mit dem Item."
     L["Critical Strike"]   = "Kritischer Trefferwert"
@@ -190,6 +204,35 @@ local function CurrentSpecID()
     local index = GetSpecialization and GetSpecialization()
     if not index then return nil end
     return (GetSpecializationInfo(index))
+end
+
+-------------------------------------------------------------------------------
+-- Einstellungen des Ausruestungs-Reiters: je Charakter und Spezialisierung.
+-- Ein Vergelter raeumt anders auf als ein Schutz-Paladin, deshalb nicht global.
+-------------------------------------------------------------------------------
+local GEAR_OPT_DEFAULTS = { sockets = false, embellished = false, lowerIlvl = false }
+
+local function CharData()
+    local s = db()
+    s.chars = s.chars or {}
+    local key = (UnitGUID and UnitGUID("player")) or "unknown"
+    s.chars[key] = s.chars[key] or {}
+    return s.chars[key]
+end
+
+local function GearOpts()
+    local c = CharData()
+    c.gear = c.gear or {}
+    local spec = CurrentSpecID() or 0
+    local o = c.gear[spec]
+    if not o then
+        o = {}
+        c.gear[spec] = o
+    end
+    for k, v in pairs(GEAR_OPT_DEFAULTS) do
+        if o[k] == nil then o[k] = v end
+    end
+    return o
 end
 
 -- Wie weit ist der Wert vom Zielbereich entfernt? Gerundet und vorzeichenbehaftet:
@@ -624,6 +667,25 @@ local function DockHost()
     return nil
 end
 
+-- Andere Addons, die ebenfalls am Charakterfenster andocken, sollen sich rechts
+-- an unser Fenster haengen statt sich darueberzulegen. ClassCodex bietet dafuer
+-- eine Anmeldung an; Prioritaet ueber 10 schlaegt dort das Charakterfenster.
+-- Ist das Addon nicht da oder aendert es seine Schnittstelle, passiert nichts.
+local function RegisterAsDockHost()
+    local cc = _G.ClassCodex
+    if not (cc and type(cc.RegisterDockHost) == "function" and frame) then return end
+    pcall(cc.RegisterDockHost, frame, { priority = 50, parent = CharacterFrame,
+        point = "TOPLEFT", relativePoint = "TOPRIGHT", xOffset = -2, yOffset = 0 })
+end
+
+-- Nach jeder eigenen Bewegung: Nachbarn neu ausrichten lassen. Sind wir
+-- eingeklappt oder zu, faellt das andere Addon von selbst auf das
+-- Charakterfenster zurueck.
+local function RefreshNeighbours()
+    local cc = _G.ClassCodex
+    if cc and type(cc.RefreshDock) == "function" then pcall(cc.RefreshDock) end
+end
+
 local function ApplySettings()
     local s = db()
     local host, dx, dy = DockHost()
@@ -654,6 +716,7 @@ local function ApplySettings()
         frame:SetShown(not s.hidden)
         if toggle then toggle:Hide() end
     end
+    RefreshNeighbours()
 end
 
 -- Lasche an der rechten Kante des Charakterfensters: klappt RealStats ein und aus.
@@ -671,6 +734,7 @@ local function CreateToggle()
         s.collapsed = not s.collapsed
         ApplySettings()
         if not s.collapsed then QueueUpdate() end
+        RefreshNeighbours()
     end)
     toggle:SetScript("OnEnter", function(self)
         GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
@@ -716,6 +780,7 @@ end
 ns.UI = {
     L = L, db = db, PAD = PAD, WIDTH = WIDTH, HEADER = HEADER, COLORS = COLORS,
     Round = Round, Rating = Rating, ReadRatings = ReadRatings, CurrentSpecID = CurrentSpecID,
+    GearOpts = GearOpts, CharData = CharData,
     IsInCombat = function() return inCombat end,
     Update = function() Update() end,
 }
@@ -842,7 +907,12 @@ RegisterLive()
 
 events:SetScript("OnEvent", function(_, event, arg1)
     if event == "ADDON_LOADED" then
-        if arg1 ~= ADDON_NAME then return end
+        if arg1 ~= ADDON_NAME then
+            -- Ein anderes Addon ist dazugekommen: melden, dass es sich rechts
+            -- an uns haengen soll (die Anmeldung ueberschreibt sich selbst).
+            if frame then RegisterAsDockHost() end
+            return
+        end
         -- Frühere Einstellungen (Befehle gibt es nicht mehr) auf den festen Stand bringen
         local s = db()
         s.docked, s.hidden, s.locked, s.scale = true, false, false, 1.0
@@ -850,6 +920,7 @@ events:SetScript("OnEvent", function(_, event, arg1)
         CreateToggle()
         HookCharacterWindow()
         ApplySettings()
+        RegisterAsDockHost()
 
     elseif event == "PLAYER_LOGOUT" then
         if ns.TakeSnapshot then ns.TakeSnapshot() end
