@@ -47,6 +47,11 @@ if GetLocale() == "deDE" then
     L["Not possible during combat."] = "Im Kampf nicht möglich."
     L["Calculate checks your equipped items and bags."] = "Berechnen prüft deine angelegten Items und deine Taschen."
     L["May be swapped:"]   = "Tauschen erlaubt:"
+    L["Keep in place:"]    = "Soll nicht getauscht werden:"
+    L["Choose slot"]       = "Platz wählen"
+    L["Release"]           = "Lösen"
+    L["No better combination - %d slot(s) are kept in place."] =
+        "Keine bessere Kombination – %d Plätze sind festgehalten."
     L["Items with a socket"] = "Teile mit Sockelplatz"
     L["Embellished items"] = "Verzierte Teile"
     L["Items with lower item level"] = "Teile mit niedrigerem Itemlevel"

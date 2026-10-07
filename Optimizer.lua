@@ -266,6 +266,15 @@ end
 
 function ns.Optimize(gear, ratings, share, opts)
     local equipped = gear.equipped
+
+    -- Festgehaltene Plaetze. Das Schloss gilt dem Platz: Was dort haengt,
+    -- bleibt haengen; der Ausgleich laeuft ueber die uebrigen Plaetze.
+    -- Ein Schloss auf einem leeren Platz wird ignoriert.
+    local lock = {}
+    for slot, an in pairs(opts and opts.locked or {}) do
+        if an and equipped[slot] then lock[slot] = true end
+    end
+
     local setID, setCount = MainSet(equipped)
     local setNeed = setCount >= 4 and 4 or setCount >= 2 and 2 or 0
     local embNow = 0
@@ -296,10 +305,12 @@ function ns.Optimize(gear, ratings, share, opts)
         if current ~= nil then
             for _, k in ipairs(KEYS) do base[k] = base[k] - current[k] end
             local list = { current }
-            for _, e in ipairs(gear.bags) do
-                if s.locs[e.equipLoc] and (not s.armor or e.classID ~= 4 or not gear.armorSubclass
-                                           or e.subclassID == gear.armorSubclass) then
-                    table.insert(list, e)
+            if not lock[s.slot] then
+                for _, e in ipairs(gear.bags) do
+                    if s.locs[e.equipLoc] and (not s.armor or e.classID ~= 4 or not gear.armorSubclass
+                                               or e.subclassID == gear.armorSubclass) then
+                        table.insert(list, e)
+                    end
                 end
             end
             local g = { options = {} }
@@ -308,6 +319,7 @@ function ns.Optimize(gear, ratings, share, opts)
                 local o = (e == current) and cur or option({ e }, { s.slot })
                 if Allowed(o, cur, opts) then table.insert(g.options, o) end
             end
+            if #g.options == 0 then g.options = { cur } end
             table.insert(groups, g)
         end
     end
@@ -319,8 +331,10 @@ function ns.Optimize(gear, ratings, share, opts)
         if family then
             for _, k in ipairs(KEYS) do base[k] = base[k] - current[k] end
             local list = { current }
-            for _, e in ipairs(gear.bags) do
-                if WEAPON_FAMILIES[family][e.equipLoc] then table.insert(list, e) end
+            if not lock[slot] then
+                for _, e in ipairs(gear.bags) do
+                    if WEAPON_FAMILIES[family][e.equipLoc] then table.insert(list, e) end
+                end
             end
             local g = { options = {} }
             local cur = option({ current }, { slot })
@@ -328,6 +342,7 @@ function ns.Optimize(gear, ratings, share, opts)
                 local o = (e == current) and cur or option({ e }, { slot })
                 if Allowed(o, cur, opts) then table.insert(g.options, o) end
             end
+            if #g.options == 0 then g.options = { cur } end
             table.insert(groups, g)
         end
     end
@@ -351,11 +366,13 @@ function ns.Optimize(gear, ratings, share, opts)
                 local a, b = keepBoth[i], keepBoth[j]
                 if a.id ~= b.id then          -- Ringe sind einzigartig anlegbar
                     if a == r2 or b == r1 then a, b = b, a end
-                    local o = option({ a, b }, { 11, 12 })
-                    if Allowed(o, cur, opts) then table.insert(g.options, o) end
+                    local haelt = (not lock[11] or a == r1) and (not lock[12] or b == r2)
+                    local o = haelt and option({ a, b }, { 11, 12 }) or nil
+                    if o and Allowed(o, cur, opts) then table.insert(g.options, o) end
                 end
             end
         end
+        if #g.options == 0 then g.options = { cur } end
         -- aktuelle Kombination zuerst
         table.sort(g.options, function(x, y) return x.swaps < y.swaps end)
         table.insert(groups, g)

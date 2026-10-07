@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.0.3
+
+* Zielwerte vom 07.10.2026: 80 Abrufe ueber alle Spezialisierungen in Mythic+ und Raid, 7830 ausgewertete Spieler (kleinste Gruppe 33).
+* Deutlichere Verschiebungen (ab 2 Prozentpunkten): Bewahrung-Rufer (Mythic+), Waechter-Druide (Mythic+), Nebelwirker-Moench (Mythic+), Braumeister-Moench (Mythic+), Arkan-Magier (Mythic+).
+* Median-Itemlevel der Besten 326 -> 327, die Summen-Zeile steigt entsprechend mit.
+
 ## 1.0.2
 
 Die ersten Rueckmeldungen von Nutzern, umgesetzt.

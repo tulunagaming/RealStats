@@ -24,7 +24,7 @@ local SWITCHES = {
     { key = "embellished", label = "Embellished items" },
     { key = "lowerIlvl",   label = "Items with lower item level" },
 }
-local TEXT_TOP = 186      -- Umschalter, drei Haken und drei Knopfreihen darueber
+local TEXT_TOP = 226      -- Umschalter, Haken, Schloss-Auswahl und drei Knopfreihen darueber
 local SET_ICON = 134400   -- Fragezeichen; wird durch das Waffensymbol ersetzt, wenn vorhanden
 
 local panel
@@ -84,9 +84,46 @@ local function PreviousChanges()
     return changes
 end
 
+-- Blizzard nennt beide Ringplaetze gleich ("Finger"). In einer Liste, in der
+-- man einen davon auswaehlt, muss man sie unterscheiden koennen.
+local SLOT_SUFFIX = { [11] = " 1", [12] = " 2" }
+
 local function SlotName(slot)
     local name = _G[SLOT_GLOBALS[slot] or ""]
-    return type(name) == "string" and name or ("#" .. slot)
+    if type(name) ~= "string" then return "#" .. slot end
+    return name .. (SLOT_SUFFIX[slot] or "")
+end
+
+-- Festgehaltene Plaetze: der Optimierer laesst sie liegen und gleicht ueber
+-- die uebrigen aus. Je Charakter und Spezialisierung gespeichert, wie die Haken.
+local function Locked()
+    local opts = UI().GearOpts()
+    opts.locked = opts.locked or {}
+    return opts.locked
+end
+
+-- In der Reihenfolge von MANAGED_SLOTS, damit die Liste nicht springt.
+local function LockedSlots()
+    local locked, out = Locked(), {}
+    for _, slot in ipairs(MANAGED_SLOTS) do
+        if locked[slot] then table.insert(out, slot) end
+    end
+    return out
+end
+
+local function FreeSlots()
+    local locked, out = Locked(), {}
+    for _, slot in ipairs(MANAGED_SLOTS) do
+        if not locked[slot] then table.insert(out, slot) end
+    end
+    return out
+end
+
+-- Ein Schloss aendert die Regeln; das letzte Ergebnis passt dann nicht mehr.
+local function Invalidate()
+    state.result, state.ready, state.message = nil, nil, nil
+    state.stale = false
+    UI().Update()
 end
 
 local function Render()
@@ -102,6 +139,51 @@ local function Render()
         cb:SetChecked(opts[cb.key] and true or false)
         cb:SetEnabled(not combat and not state.busy)
     end
+    -- Festgehaltene Plaetze auffrischen. Zeilen werden wiederverwendet,
+    -- ueberzaehlige nur versteckt.
+    local slots = LockedSlots()
+    -- Zwei Spalten, erst die linke von oben nach unten. Vierzehn Plaetze
+    -- festzuhalten ist zwar unsinnig, darf die Anzeige aber nicht zerreissen.
+    local PER_COL, ROW_H = 7, 14
+    -- Breite aus den festen Massen, nicht aus GetWidth: der Rahmen ist beim
+    -- ersten Zeichnen noch nicht vermessen.
+    local colW = math.floor((ui.WIDTH - ui.PAD * 2) / 2)
+    for i, slot in ipairs(slots) do
+        local row = panel.lockRows[i]
+        if not row then
+            row = CreateFrame("Frame", nil, panel.lockList)
+            row:SetSize(colW, ROW_H)
+            row:SetPoint("TOPLEFT", math.floor((i - 1) / PER_COL) * colW,
+                         -((i - 1) % PER_COL) * ROW_H)
+            row.text = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+            row.text:SetPoint("LEFT", 2, 0)
+            row.text:SetTextColor(0.25, 0.85, 0.35)
+            row.close = CreateFrame("Button", nil, row)
+            row.close:SetSize(14, 14)
+            row.close:SetPoint("LEFT", row.text, "RIGHT", 6, 0)
+            row.close:SetNormalTexture("Interface\\Buttons\\UI-StopButton")
+            row.close:SetScript("OnEnter", function(self)
+                GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
+                GameTooltip:SetText(UI().L["Release"])
+                GameTooltip:Show()
+            end)
+            row.close:SetScript("OnLeave", function() GameTooltip:Hide() end)
+            panel.lockRows[i] = row
+        end
+        row.slot = slot
+        row.text:SetText(SlotName(slot))
+        row.close:SetScript("OnClick", function()
+            if UI().IsInCombat() then return end
+            Locked()[slot] = nil
+            Invalidate()
+        end)
+        row.close:SetEnabled(not combat and not state.busy)
+        row:Show()
+    end
+    for i = #slots + 1, #panel.lockRows do panel.lockRows[i]:Hide() end
+    panel.lockList:SetHeight(math.max(1, math.min(#slots, PER_COL) * ROW_H))
+    panel.lockPick:SetEnabled(not combat and not state.busy and #FreeSlots() > 0)
+
     local previous = PreviousChanges()
     panel.restore:SetEnabled(not combat and not state.busy and previous ~= nil and #previous > 0)
     panel.backup:SetEnabled(not combat and not state.busy and C_EquipmentSet ~= nil)
@@ -121,7 +203,12 @@ local function Render()
     else
         if state.stale then add("|cffff9933" .. L["Gear changed - calculate again."] .. "|r") end
         if #result.changes == 0 then
-            add(L["No better combination found - your gear already fits best."])
+            if #LockedSlots() > 0 then
+                add(string.format(L["No better combination - %d slot(s) are kept in place."],
+                    #LockedSlots()))
+            else
+                add(L["No better combination found - your gear already fits best."])
+            end
         else
             add(string.format("|cffffd100" .. L["Changes (%d):"] .. "|r", #result.changes))
             for _, c in ipairs(result.changes) do
@@ -329,9 +416,42 @@ function ns.CreateGearTab(frame)
         table.insert(panel.switches, cb)
     end
 
+    -- "Soll nicht getauscht werden": Platz aus der Liste waehlen, er erscheint
+    -- darunter in Gruen und wird mit dem X wieder freigegeben. Gedacht fuer den
+    -- Fall, dass man ein Teil tragen WILL und den Rest darum herum braucht.
+    panel.lockHeader = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    panel.lockHeader:SetPoint("TOPLEFT", panel.switches[#panel.switches], "BOTTOMLEFT", 0, -10)
+    panel.lockHeader:SetText(L["Keep in place:"])
+
+    panel.lockPick = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
+    panel.lockPick:SetSize(130, 20)
+    panel.lockPick:SetPoint("TOPLEFT", panel.lockHeader, "BOTTOMLEFT", 0, -3)
+    panel.lockPick:SetText(L["Choose slot"])
+    panel.lockPick:SetScript("OnClick", function(self)
+        if UI().IsInCombat() then return end
+        local frei = FreeSlots()
+        if #frei == 0 then return end
+        if MenuUtil and MenuUtil.CreateContextMenu then
+            MenuUtil.CreateContextMenu(self, function(_, root)
+                for _, slot in ipairs(frei) do
+                    root:CreateButton(SlotName(slot), function()
+                        Locked()[slot] = true
+                        Invalidate()
+                    end)
+                end
+            end)
+        end
+    end)
+
+    -- Die Zeilen wachsen nach unten; der Rahmen traegt die Knoepfe darunter mit.
+    panel.lockList = CreateFrame("Frame", nil, panel)
+    panel.lockList:SetPoint("TOPLEFT", panel.lockPick, "BOTTOMLEFT", 0, -2)
+    panel.lockList:SetSize(ui.WIDTH - ui.PAD * 2, 1)
+    panel.lockRows = {}
+
     panel.calc = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")
     panel.calc:SetSize(110, 22)
-    panel.calc:SetPoint("TOPLEFT", panel.switches[#panel.switches], "BOTTOMLEFT", 0, -6)
+    panel.calc:SetPoint("TOPLEFT", panel.lockList, "BOTTOMLEFT", 0, -6)
     panel.calc:SetText(L["Calculate"])
     panel.calc:SetScript("OnClick", function()
         if UI().IsInCombat() then return end

@@ -3,7 +3,7 @@
 ## Notes: Your secondary stats against the distribution the best players actually run, scaled to your gear.
 ## Notes-deDE: Deine Sekundärwerte im Vergleich zur Verteilung der besten Spieler, umgerechnet auf deine Ausrüstung.
 ## Author: Tuluna
-## Version: 1.0.2
+## Version: 1.0.3
 ## SavedVariables: RealStatsDB
 ## IconTexture: Interface\AddOns\RealStats\Icon
 ## X-License: All Rights Reserved
