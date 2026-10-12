@@ -24,7 +24,8 @@ local SWITCHES = {
     { key = "embellished", label = "Embellished items" },
     { key = "lowerIlvl",   label = "Items with lower item level" },
 }
-local TEXT_TOP = 226      -- Umschalter, Haken, Schloss-Auswahl und drei Knopfreihen darueber
+local TEXT_TOP = 226      -- Hoehe ohne festgehaltene Plaetze (nur noch fuer die Panelhoehe)
+local LOCK_ROW_H = 14     -- eine Zeile der Schloss-Liste
 local SET_ICON = 134400   -- Fragezeichen; wird durch das Waffensymbol ersetzt, wenn vorhanden
 
 local panel
@@ -142,9 +143,10 @@ local function Render()
     -- Festgehaltene Plaetze auffrischen. Zeilen werden wiederverwendet,
     -- ueberzaehlige nur versteckt.
     local slots = LockedSlots()
-    -- Zwei Spalten, erst die linke von oben nach unten. Vierzehn Plaetze
-    -- festzuhalten ist zwar unsinnig, darf die Anzeige aber nicht zerreissen.
-    local PER_COL, ROW_H = 7, 14
+    -- Immer zwei Spalten, damit die Liste halb so hoch bleibt: bei sieben
+    -- Plaetzen vier Zeilen statt sieben. Hoechstens sieben Zeilen (14 Plaetze).
+    local ROW_H = LOCK_ROW_H
+    local PER_COL = math.max(1, math.min(7, math.ceil(#slots / 2)))
     -- Breite aus den festen Massen, nicht aus GetWidth: der Rahmen ist beim
     -- ersten Zeichnen noch nicht vermessen.
     local colW = math.floor((ui.WIDTH - ui.PAD * 2) / 2)
@@ -182,6 +184,14 @@ local function Render()
     end
     for i = #slots + 1, #panel.lockRows do panel.lockRows[i]:Hide() end
     panel.lockList:SetHeight(math.max(1, math.min(#slots, PER_COL) * ROW_H))
+    -- Die Zeilen sitzen fest verankert; bei geaenderter Spaltenhoehe neu setzen
+    for i, row in ipairs(panel.lockRows) do
+        if i <= #slots then
+            row:ClearAllPoints()
+            row:SetPoint("TOPLEFT", math.floor((i - 1) / PER_COL) * colW,
+                         -((i - 1) % PER_COL) * ROW_H)
+        end
+    end
     panel.lockPick:SetEnabled(not combat and not state.busy and #FreeSlots() > 0)
 
     local previous = PreviousChanges()
@@ -199,7 +209,8 @@ local function Render()
     if state.message then add(state.message) end
 
     if not result then
-        if not state.message then add("|cff999999" .. L["Calculate checks your equipped items and bags."] .. "|r") end
+        -- Kein Hinweis "Berechnen prueft ..." mehr: der graue Regeltext unten im
+        -- Fenster sagt dasselbe, und der Platz wird fuer die Wechselliste gebraucht.
     else
         if state.stale then add("|cffff9933" .. L["Gear changed - calculate again."] .. "|r") end
         if #result.changes == 0 then
@@ -510,7 +521,7 @@ function ns.CreateGearTab(frame)
     panel.backup:SetScript("OnClick", SaveCurrentAsSet)
 
     panel.text = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
-    panel.text:SetPoint("TOPLEFT", 0, -TEXT_TOP)
+    panel.text:SetPoint("TOPLEFT", panel.restore, "BOTTOMLEFT", 0, -8)
     panel.text:SetWidth(ui.WIDTH - ui.PAD * 2)
     panel.text:SetJustifyH("LEFT")
     panel.text:SetJustifyV("TOP")
@@ -526,7 +537,9 @@ function ns.ShowGearTab()
     panel:Show()
     Render()
     local h = panel.text:GetStringHeight()
-    return TEXT_TOP + (type(h) == "number" and h or 200) + 8
+    local n = #LockedSlots()
+    local zeilen = math.max(0, math.min(7, math.ceil(n / 2)))   -- zwei Spalten
+    return TEXT_TOP + zeilen * LOCK_ROW_H + (type(h) == "number" and h or 200) + 8
 end
 
 function ns.HideGearTab()

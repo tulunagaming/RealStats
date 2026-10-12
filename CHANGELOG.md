@@ -1,5 +1,20 @@
 # Changelog
 
+## 1.0.4
+
+* **Buffs und Ziele erklaert.** Feste Buffs zaehlen in die Summe und heben damit
+  auch die Ziele der anderen Werte an. Das stand bisher nirgends und sah nach
+  einem Rechenfehler aus. Jetzt sagt es eine Zeile unter den Balken (nur wenn
+  ein Buff wirkt) und der Tooltip jedes Werts.
+* Kopfzeile und Erklaertext benennen die Rechnung: "Die Summe deiner Werte" und
+  "Ihre Anteile mal der Summe deiner Werte (3000) ergeben deine Ziele".
+* Reiter Ausruestung: Die Liste der festgehaltenen Plaetze laeuft in zwei
+  Spalten statt einer, der Hinweis "Berechnen prueft ..." entfaellt (der
+  Regeltext darunter sagt dasselbe), und der Rahmen waechst jetzt mit dem Text
+  mit - nichts ueberlagert sich mehr, egal wie viele Plaetze festgehalten sind.
+* Nachgetragen: Einzelne Ausruestungsplaetze lassen sich festhalten, der
+  Optimierer gleicht ueber die uebrigen aus (war bereits in 1.0.3 enthalten).
+
 ## 1.0.3
 
 * Zielwerte vom 07.10.2026: 80 Abrufe ueber alle Spezialisierungen in Mythic+ und Raid, 7830 ausgewertete Spieler (kleinste Gruppe 33).

@@ -80,14 +80,14 @@ if GetLocale() == "deDE" then
     L["Haste"]             = "Tempo"
     L["Versatility"]       = "Vielseitigkeit"
     L["in target"]         = "im Ziel"
-    L["Your stat total %d"] = "Deine Summe %d"
+    L["Your stat total %d"] = "Die Summe deiner Werte %d"
     L["No targets for this specialization yet."] = "Für diese Spezialisierung gibt es noch keine Zielwerte."
     L["No targets for this content yet."] = "Für diesen Inhalt gibt es noch keine Zielwerte."
     L["%d top players · mythic · as of %s"] = "%d Top-Spieler · mythisch · Stand %s"
-    L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, keys +%d-%d), scaled to your total. In target = within ±5 %%."] =
-        "Ziele: So verteilen die %d besten Spieler deiner Spezialisierung ihre Sekundärwerte (Warcraft Logs, Schlüssel +%d-%d), umgerechnet auf deine Summe. Im Ziel = höchstens ±5 %% Abweichung."
-    L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, mythic raid), scaled to your total. In target = within ±5 %%."] =
-        "Ziele: So verteilen die %d besten Spieler deiner Spezialisierung ihre Sekundärwerte (Warcraft Logs, Raid mythisch), umgerechnet auf deine Summe. Im Ziel = höchstens ±5 %% Abweichung."
+    L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, keys +%d-%d). Their shares times your stat total (%d) give your targets. In target = within ±5 %%."] =
+        "Ziele: So verteilen die %d besten Spieler deiner Spezialisierung ihre Sekundärwerte (Warcraft Logs, Schlüssel +%d-%d). Ihre Anteile mal der Summe deiner Werte (%d) ergeben deine Ziele. Im Ziel = höchstens ±5 %% Abweichung."
+    L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, mythic raid). Their shares times your stat total (%d) give your targets. In target = within ±5 %%."] =
+        "Ziele: So verteilen die %d besten Spieler deiner Spezialisierung ihre Sekundärwerte (Warcraft Logs, Raid mythisch). Ihre Anteile mal der Summe deiner Werte (%d) ergeben deine Ziele. Im Ziel = höchstens ±5 %% Abweichung."
     L["Frozen during combat"] = "Im Kampf eingefroren"
     L["Stats are hidden by the game right now - showing the last values."] =
         "Werte gerade vom Spiel gesperrt - Anzeige zeigt den letzten Stand."
@@ -95,8 +95,11 @@ if GetLocale() == "deDE" then
     L["Your value"]        = "Dein Wert"
     L["from gear"]         = "davon Ausrüstung"
     L["Purple: fixed buffs (flask, food)"] = "Lila: feste Buffs (Fläschchen, Essen)"
-    L["Purple part: fixed buffs such as flask and food. They are included for the best players, too."] =
-        "Lila Anteil: feste Buffs wie Fläschchen und Essen. Bei den Besten sind sie ebenfalls enthalten."
+    L["Flask and food count towards your total - that is why they raise the targets of the other stats as well."] =
+        "Fläschchen und Essen zählen in deine Summe - deshalb heben sie auch die Ziele der anderen Werte an."
+    L["Purple part: fixed buffs such as flask and food. They are included for the best players, too. Because they count towards your total, they also raise the targets of the other stats."] =
+        "Lila Anteil: feste Buffs wie Fläschchen und Essen. Bei den Besten sind sie ebenfalls enthalten. "
+        .. "Weil sie in deine Summe zählen, heben sie auch die Ziele der anderen Werte an."
     L["Target"]            = "Ziel"
     L["Target range"]      = "Zielbereich"
     L["To the target range"] = "Bis zum Zielbereich"
@@ -310,7 +313,7 @@ local function ShowTotalTooltip(info)
     end
     GameTooltip:AddLine(L["The gap is roughly what item upgrades can still give you."], 0.55, 0.55, 0.55, true)
     if (info.buff or 0) > 0 then
-        GameTooltip:AddLine(L["Purple part: fixed buffs such as flask and food. They are included for the best players, too."],
+        GameTooltip:AddLine(L["Purple part: fixed buffs such as flask and food. They are included for the best players, too. Because they count towards your total, they also raise the targets of the other stats."],
             0.55, 0.55, 0.55, true)
     end
 end
@@ -361,7 +364,7 @@ local function ShowRowTooltip(row)
         GameTooltip:AddLine(L["Scaled to your stat total, so the target fits your item level."], 0.55, 0.55, 0.55, true)
     end
     if (info.buff or 0) > 0 then
-        GameTooltip:AddLine(L["Purple part: fixed buffs such as flask and food. They are included for the best players, too."],
+        GameTooltip:AddLine(L["Purple part: fixed buffs such as flask and food. They are included for the best players, too. Because they count towards your total, they also raise the targets of the other stats."],
             0.55, 0.55, 0.55, true)
     end
     GameTooltip:Show()
@@ -554,9 +557,17 @@ local function Update()
     if db().tab == "gear" then
         for _, row in ipairs(rows) do row:Hide() end
         frame.legend:Hide()
+        frame.buffNote:Hide()
         frame.message:Hide()
         frame.explain:ClearAllPoints()
-        frame.explain:SetPoint("BOTTOMLEFT", PAD, 24)
+        -- Im Ausruestungs-Reiter haengt der Regeltext UNTER dem Ergebnis, nicht
+        -- am Fensterboden: festgehaltene Plaetze und Wechselliste schieben den
+        -- Inhalt nach unten, sonst ueberlagern sich beide Texte.
+        if ns.GearPanel and ns.GearPanel.text then
+            frame.explain:SetPoint("TOPLEFT", ns.GearPanel.text, "BOTTOMLEFT", 0, -10)
+        else
+            frame.explain:SetPoint("BOTTOMLEFT", PAD, 24)
+        end
         frame.explain:SetText(L["Only bound items from your bags, at most 2 embellishments, set bonus and weapon style kept, trinkets stay. Gems and enchants move with the item."])
         frame.explain:Show()
         frame.footer:SetText("")
@@ -567,7 +578,12 @@ local function Update()
             frame.subtitle:SetText(string.format(L["Your stat total %d"], Round(total)))
         end
         local h = ns.ShowGearTab and ns.ShowGearTab() or 0
-        frame:SetHeight(PanelHeight(HEADER + h + EXPLAIN_H + 24))
+        -- Echte Hoehe des Regeltexts nehmen, nicht die Pauschale: er ist je nach
+        -- Sprache vier bis sechs Zeilen hoch und haengt unter dem Ergebnis.
+        -- Sonst endet der Rahmen mitten im Text.
+        local eh = frame.explain:GetStringHeight()
+        eh = math.max(EXPLAIN_H, (type(eh) == "number" and eh or 0) + 10)
+        frame:SetHeight(PanelHeight(HEADER + h + eh + 24))
         return
     end
     if ns.HideGearTab then ns.HideGearTab() end
@@ -575,6 +591,7 @@ local function Update()
     if not data then
         for _, row in ipairs(rows) do row:Hide() end
         frame.legend:Hide()
+        frame.buffNote:Hide()
         frame.explain:Hide()
         frame.subtitle:SetText("")
         frame.message:SetText(specData and L["No targets for this content yet."]
@@ -609,6 +626,7 @@ local function Update()
     frame.legend:SetShown(buffTotal > 0)
     frame.explain:ClearAllPoints()
     frame.explain:SetPoint("BOTTOMLEFT", PAD, buffTotal > 0 and 40 or 24)
+    frame.buffNote:SetShown(buffTotal > 0)
 
     local t = data.total
     if t then
@@ -636,11 +654,11 @@ local function Update()
 
     frame.subtitle:SetText(string.format(L["Your stat total %d"], Round(result.total)))
     if data.minKey then
-        frame.explain:SetText(string.format(L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, keys +%d-%d), scaled to your total. In target = within ±5 %%."],
-            data.players, data.minKey, data.maxKey))
+        frame.explain:SetText(string.format(L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, keys +%d-%d). Their shares times your stat total (%d) give your targets. In target = within ±5 %%."],
+            data.players, data.minKey, data.maxKey, Round(result.total)))
     else
-        frame.explain:SetText(string.format(L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, mythic raid), scaled to your total. In target = within ±5 %%."],
-            data.players))
+        frame.explain:SetText(string.format(L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, mythic raid). Their shares times your stat total (%d) give your targets. In target = within ±5 %%."],
+            data.players, Round(result.total)))
     end
     frame.explain:Show()
     if data.minKey then
@@ -857,6 +875,19 @@ local function CreateMainFrame()
     frame.message:SetJustifyH("LEFT")
     frame.message:Hide()
 
+    -- Hinweis unter den Balken: erscheint nur, wenn ein fester Buff wirkt.
+    -- In der Buff-Farbe, damit der Bezug zum lila Balkenanteil sofort klar ist.
+    frame.buffNote = frame:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+    frame.buffNote:SetWidth(WIDTH - PAD * 2)
+    frame.buffNote:SetJustifyH("LEFT")
+    frame.buffNote:SetWordWrap(true)
+    -- Direkt unter der letzten Wertzeile: Summe + vier Werte, dann ein wenig Luft
+    frame.buffNote:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD,
+        -(HEADER + (#STATS + 1) * ROW_HEIGHT + 6))
+    frame.buffNote:SetTextColor(COLORS.buff[1], COLORS.buff[2], COLORS.buff[3])
+    frame.buffNote:SetText(L["Flask and food count towards your total - that is why they raise the targets of the other stats as well."])
+    frame.buffNote:Hide()
+
     frame.legend = CreateFrame("Frame", nil, frame)
     frame.legend:SetSize(WIDTH - PAD * 2, 12)
     frame.legend:SetPoint("BOTTOMLEFT", PAD, 24)
@@ -868,6 +899,7 @@ local function CreateMainFrame()
     frame.legend.text:SetPoint("LEFT", frame.legend.swatch, "RIGHT", 5, 0)
     frame.legend.text:SetText(L["Purple: fixed buffs (flask, food)"])
     frame.legend:Hide()
+    frame.buffNote:Hide()
 
     -- grauer Erklärtext: woher die Ziele kommen
     frame.explain = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
