@@ -109,6 +109,20 @@ if GetLocale() == "deDE" then
         "Auf deine Summe umgerechnet, damit das Ziel zu deinem Itemlevel passt."
     L["Only shown as a guide line; the best players barely use it."] =
         "Nur als Orientierungsstrich; die Besten setzen kaum darauf."
+    L["Top players"]       = "Die Besten"
+    L["Trinkets"]          = "Schmuckstücke"
+    L["Embellishments"]    = "Verzierungen"
+    L["Most common pair:"] = "Häufigste Kombination:"
+    L["You wear"]          = "Du trägst"
+    L["rare among the best"] = "bei den Besten selten"
+    L["rare"]              = "selten"
+    L["Together:"]         = "Zusammen:"
+    L["Loading ..."]       = "lädt ..."
+    L["No data yet."]      = "Noch keine Daten."
+    L["No data for %s yet."] = "Für %s gibt es hier noch keine Daten."
+    L["Show:"]             = "Anzeigen:"
+    L["What the %d best players of your spec wear. Same sample as the targets."] =
+        "Was die %d besten Spieler deiner Spezialisierung tragen - dieselbe Stichprobe wie bei den Zielwerten."
     L["Click: expand"]   = "Klick: ausklappen"
     L["Click: collapse"] = "Klick: einklappen"
 end
@@ -131,6 +145,7 @@ local TABS = {
     { key = "mplus", label = "Mythic+" },
     { key = "raid",  label = "Raid" },
     { key = "gear",  label = "Gear" },
+    { key = "best",  label = "Top players" },
 }
 
 -- Reihenfolge und Beschriftung. Alle vier Werte bekommen die ±5-%-Schablone,
@@ -553,6 +568,36 @@ local function Update()
     local specData = specID and ns.TARGETS and ns.TARGETS[specID]
     local data = specData and specData[db().tab]
 
+    -- Vierter Reiter: Was die Besten tragen
+    if db().tab == "best" then
+        for _, row in ipairs(rows) do row:Hide() end
+        frame.legend:Hide()
+        frame.buffNote:Hide()
+        frame.message:Hide()
+        if ns.HideGearTab then ns.HideGearTab() end
+        local data = specData and specData[db().bestFor or "mplus"]
+        local g = data and data.gear
+        frame.subtitle:SetText(g and g.players
+            and string.format(L["%d top players"] or "%d", g.players) or "")
+        local h = ns.ShowBestTab and ns.ShowBestTab() or 0
+        frame.explain:ClearAllPoints()
+        if ns.BestPanel and ns.BestPanel.text then
+            frame.explain:SetPoint("TOPLEFT", ns.BestPanel.text, "BOTTOMLEFT", 0, -10)
+        else
+            frame.explain:SetPoint("BOTTOMLEFT", PAD, 24)
+        end
+        frame.explain:SetText(g and g.players
+            and string.format(L["What the %d best players of your spec wear. Same sample as the targets."], g.players)
+            or "")
+        frame.explain:SetShown(g ~= nil)
+        frame.footer:SetText("")
+        local eh = frame.explain:GetStringHeight()
+        eh = math.max(EXPLAIN_H, (type(eh) == "number" and eh or 0) + 10)
+        frame:SetHeight(PanelHeight(HEADER + h + eh + 24))
+        return
+    end
+    if ns.HideBestTab then ns.HideBestTab() end
+
     -- Dritter Reiter: Ausrüstung optimieren
     if db().tab == "gear" then
         for _, row in ipairs(rows) do row:Hide() end
@@ -868,6 +913,7 @@ local function CreateMainFrame()
     RefreshTabs()
 
     if ns.CreateGearTab then ns.CreateGearTab(frame) end
+    if ns.CreateBestTab then ns.CreateBestTab(frame) end
 
     frame.message = frame:CreateFontString(nil, "OVERLAY", "GameFontDisable")
     frame.message:SetPoint("TOPLEFT", PAD, -HEADER)
@@ -930,6 +976,7 @@ events:RegisterEvent("PLAYER_ENTERING_WORLD")
 events:RegisterEvent("PLAYER_SPECIALIZATION_CHANGED")
 events:RegisterEvent("PLAYER_REGEN_DISABLED")
 events:RegisterEvent("PLAYER_REGEN_ENABLED")
+events:RegisterEvent("GET_ITEM_INFO_RECEIVED")
 events:RegisterEvent("PLAYER_LOGOUT")          -- feuert auch bei /reload, kurz vor dem Speichern
 local function RegisterLive()
     for _, e in ipairs(LIVE_EVENTS) do
@@ -979,6 +1026,9 @@ events:SetScript("OnEvent", function(_, event, arg1)
     elseif event == "PLAYER_ENTERING_WORLD" then
         inCombat = UnitAffectingCombat and UnitAffectingCombat("player") and true or false
         QueueUpdate()
+
+    elseif event == "GET_ITEM_INFO_RECEIVED" then
+        if ns.BestItemLoaded then ns.BestItemLoaded(arg1) end
 
     elseif event == "PLAYER_EQUIPMENT_CHANGED" then
         if ns.GearChanged then ns.GearChanged() end

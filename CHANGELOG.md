@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.1.0
+
+* **Neuer Reiter „Die Besten".** Er zeigt, welche Schmuckstuecke und
+  Verzierungen die besten Spieler deiner Spezialisierung tragen - in Prozent,
+  getrennt nach Mythic+ und Raid, aus derselben Stichprobe wie die Zielwerte.
+  Darunter steht, was du selbst traegst, mit [BIS] an dem, was die Besten
+  ueblicherweise zusammen anlegen. Traegst du etwas Ungewoehnliches, steht es
+  trotzdem da - mit dem Vermerk „selten".
+  Keine Platz-fuer-Platz-Listen: Was ohne Bezug zur eigenen Ausruestung ist,
+  kann eine Webseite besser.
+* Zielwerte vom 15.10.2026: 80 Abrufe ueber alle Spezialisierungen in Mythic+
+  und Raid, 6736 ausgewertete Spieler (kleinste Gruppe 51). Deutlichere
+  Verschiebungen bei Taeuschung-Schurke, Windwandler-Moench, Verheerung- und
+  Augmentation-Rufer sowie Tierherrschaft-Jaeger.
+* Median-Itemlevel der Besten 327 -> 329, die Summen-Zeile steigt entsprechend mit.
+* Die woechentliche Erhebung laeuft jetzt donnerstags statt mittwochs - am
+  Reset-Tag ruesten die Spieler ihre Vault-Items erst im Lauf des Tages an.
+
 ## 1.0.4
 
 * **Buffs und Ziele erklaert.** Feste Buffs zaehlen in die Summe und heben damit
