@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.1.1
+
+* Zielwerte vom 23.10.2026: 80 Abrufe ueber alle Spezialisierungen in Mythic+ und Raid, 6575 ausgewertete Spieler (kleinste Gruppe 49).
+* Deutlichere Verschiebungen (ab 2 Prozentpunkten): Meucheln-Schurke (Raid), Windwandler-Moench (Raid), Waechter-Druide (Mythic+), Blut-Todesritter (Raid), Treffsicherheit-Jaeger (Raid), Feuer-Magier (Raid) und 12 weitere.
+* Median-Itemlevel der Besten 329 -> 331, die Summen-Zeile steigt entsprechend mit.
+
 ## 1.1.0
 
 * **Neuer Reiter „Die Besten".** Er zeigt, welche Schmuckstuecke und
