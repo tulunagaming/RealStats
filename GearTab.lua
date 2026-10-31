@@ -15,7 +15,11 @@ local SLOT_GLOBALS = {
 }
 local TARGETS = { { key = "mplus", label = "Mythic+" }, { key = "raid", label = "Raid" } }
 -- Name des Sets im Ausrüstungsmanager (höchstens 16 Zeichen)
-local SET_NAMES = { mplus = "RealStats M+", raid = "RealStats Raid" }
+-- Je Stufe ein eigenes Set: Spitzen- und Alltags-Schluessel fuehren zu
+-- unterschiedlicher Ausruestung, mit einem Namen wuerden sie sich gegenseitig
+-- ueberschreiben (aufgefallen 31.10.2026).
+local SET_NAMES = { mplus = "RealStats M+", mplusMid = "RealStats M+ Everyday",
+                    raid = "RealStats Raid" }
 local BACKUP_SET = "RealStats vorher"
 -- Schalter im Reiter. Alle in dieselbe Richtung gedacht: Haken = darf getauscht
 -- werden, leer = bleibt unangetastet. Gespeichert je Charakter und Spezialisierung.
@@ -53,6 +57,15 @@ local function CanSave(key)
 end
 
 local function UI() return ns.UI end
+
+-- Wofuer gerechnet wird: "raid", oder bei Mythic+ die gewaehlte Leistungsstufe
+-- ("mplus" / "mplusMid"). Alles, was von den Zielwerten abhaengt -- Rechnung,
+-- Set-Name, die "bereit"-Markierung --, muss denselben Schluessel benutzen.
+local function OptMode()
+    local ui = UI()
+    local key = ui.db().optFor
+    return ui.ActiveMode and ui.ActiveMode(key) or key
+end
 
 local function Hex(color)
     return string.format("%02x%02x%02x", math.floor(color[1] * 255 + 0.5), math.floor(color[2] * 255 + 0.5), math.floor(color[3] * 255 + 0.5))
@@ -132,6 +145,24 @@ local function Render()
     local ui, L = UI(), UI().L
     local s = ui.db()
     for _, t in ipairs(panel.targets) do t.line:SetShown(t.key == s.optFor) end
+    -- Am Mythic+-Knopf steht die geltende Leistungsstufe mit ihren
+    -- Schluesselstufen. Sonst wundert sich der Nutzer ueber zwei verschiedene
+    -- Vorschlaege, je nachdem was er im Werte-Reiter gewaehlt hat.
+    for _, t in ipairs(panel.targets) do
+        if t.key == "mplus" then
+            local text = t.label or L["Mythic+"]
+            local ui = UI()
+            local data = ui.StageData and ui.StageData(ui.Stage and ui.Stage() or "mplus")
+            if data and data.minKey then
+                text = text .. " +" .. data.minKey
+                if data.maxKey and data.maxKey ~= data.minKey then
+                    text = text .. "-" .. data.maxKey
+                end
+            end
+            t.text:SetText(text)
+            t:SetWidth(math.ceil(t.text:GetStringWidth() or 40) + 12)
+        end
+    end
 
     local combat = ui.IsInCombat()
     local result = state.result
@@ -198,8 +229,9 @@ local function Render()
     panel.restore:SetEnabled(not combat and not state.busy and previous ~= nil and #previous > 0)
     panel.backup:SetEnabled(not combat and not state.busy and C_EquipmentSet ~= nil)
     panel.calc:SetEnabled(not combat and not state.busy)
-    panel.saveSet:SetEnabled(not combat and not state.busy and C_EquipmentSet ~= nil and CanSave(s.optFor))
-    panel.saveSet:SetText(string.format(L["Save as set: %s"], SET_NAMES[s.optFor] or SET_NAMES.mplus))
+    local setMode = OptMode()
+    panel.saveSet:SetEnabled(not combat and not state.busy and C_EquipmentSet ~= nil and CanSave(setMode))
+    panel.saveSet:SetText(string.format(L["Save as set: %s"], SET_NAMES[setMode] or SET_NAMES.mplus))
     panel.apply:SetEnabled(not combat and not state.busy and result ~= nil
                            and #result.changes > 0 and not state.stale)
 
@@ -243,11 +275,14 @@ local function Render()
     panel.text:SetText(table.concat(lines, "\n"))
 end
 
+-- Gerechnet wird gegen dieselbe Stichprobe, die der Werte-Reiter zeigt: fuer
+-- Mythic+ gilt die dort gewaehlte Leistungsstufe. Kein zweiter Umschalter --
+-- zwei Stellen mit derselben Bedeutung waeren eine Fehlerquelle.
 local function TargetData()
     local ui = UI()
     local spec = ui.CurrentSpecID()
     local data = spec and ns.TARGETS and ns.TARGETS[spec]
-    return data and data[ui.db().optFor]
+    return data and data[OptMode()]
 end
 
 local function Calculate()
@@ -267,11 +302,16 @@ local function Calculate()
     end
     state.result = ns.Optimize(ns.CollectGear(), ratings, data.share, ui.GearOpts())
     state.ready = nil
-    if #state.result.changes == 0 then MarkReady(ui.db().optFor) end   -- schon die beste Ausrüstung
+    if #state.result.changes == 0 then MarkReady(OptMode()) end   -- schon die beste Ausrüstung
 end
 
 -- Speichert die gerade angelegte Ausrüstung als Set im Ausrüstungsmanager.
 -- Gibt es das Set schon, wird es überschrieben.
+function ns.StageChanged()
+    state.ready = nil
+    if state.result then state.stale = true end
+end
+
 function ns.SaveGearSet(key)
     local L = UI().L
     local name = SET_NAMES[key] or SET_NAMES.mplus
@@ -351,7 +391,7 @@ local function Apply()
     ns.EquipChanges(result.changes, function(ok, failed)
         state.busy, state.result = false, nil
         if #failed == 0 then
-            MarkReady(UI().db().optFor)
+            MarkReady(OptMode())
             state.message = "|cff40bb4f" .. string.format(L["Equipped %d item(s)."], ok) .. "|r"
         else
             state.message = "|cffe6544a" .. string.format(L["%d item(s) could not be equipped."], #failed)
@@ -377,6 +417,7 @@ function ns.CreateGearTab(frame)
     for _, info in ipairs(TARGETS) do
         local b = CreateFrame("Button", nil, panel)
         b.key = info.key
+        b.label = info.label
         b.text = b:CreateFontString(nil, "OVERLAY", "GameFontNormalSmall")
         b.text:SetPoint("CENTER")
         b.text:SetText(info.label)
@@ -391,7 +432,9 @@ function ns.CreateGearTab(frame)
             ui.db().optFor = self.key
             state.ready = nil
             if state.result then state.stale = true end
-            Render()
+            -- Update() statt Render(): mit dem Wechsel auf Raid verschwindet die
+            -- Stufenzeile, und der Panelinhalt rueckt wieder nach oben.
+            ui.Update()
         end)
         previous = b
         table.insert(panel.targets, b)
@@ -487,7 +530,7 @@ function ns.CreateGearTab(frame)
     end)
     panel.saveSet:SetScript("OnLeave", function() GameTooltip:Hide() end)
     panel.saveSet:SetScript("OnClick", function()
-        if ns.SaveGearSet(UI().db().optFor) then UI().Update() end
+        if ns.SaveGearSet(OptMode()) then UI().Update() end
     end)
 
     panel.restore = CreateFrame("Button", nil, panel, "UIPanelButtonTemplate")

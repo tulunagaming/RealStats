@@ -35,7 +35,10 @@ local function TargetData()
     local ui = UI()
     local spec = ui.CurrentSpecID()
     local data = spec and ns.TARGETS and ns.TARGETS[spec]
-    return data and data[Mode()]
+    -- Dieselbe Leistungsstufe wie die Zielwerte, sonst zeigten zwei Reiter
+    -- Zahlen aus verschiedenen Stichproben.
+    local mode = ui.ActiveMode and ui.ActiveMode(Mode()) or Mode()
+    return data and data[mode]
 end
 
 -- Was traegt der Spieler selbst? Schmuckstuecke ueber die Plaetze, Verzierungen

@@ -88,6 +88,12 @@ if GetLocale() == "deDE" then
         "Ziele: So verteilen die %d besten Spieler deiner Spezialisierung ihre Sekundärwerte (Warcraft Logs, Schlüssel +%d-%d). Ihre Anteile mal der Summe deiner Werte (%d) ergeben deine Ziele. Im Ziel = höchstens ±5 %% Abweichung."
     L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, mythic raid). Their shares times your stat total (%d) give your targets. In target = within ±5 %%."] =
         "Ziele: So verteilen die %d besten Spieler deiner Spezialisierung ihre Sekundärwerte (Warcraft Logs, Raid mythisch). Ihre Anteile mal der Summe deiner Werte (%d) ergeben deine Ziele. Im Ziel = höchstens ±5 %% Abweichung."
+    L["Push keys"]          = "Push"
+    L["Everyday keys"]      = "Alltag"
+    L["+%d-%d"]             = "+%d-%d"
+    L["For this spec both levels give almost the same targets - switching changes little."] =
+        "Bei dieser Spezialisierung sind die Ziele auf beiden Stufen fast gleich - Umschalten ändert kaum etwas."
+    L["No data for everyday keys yet."] = "Für Alltags-Schlüssel gibt es noch keine Daten."
     L["Frozen during combat"] = "Im Kampf eingefroren"
     L["Stats are hidden by the game right now - showing the last values."] =
         "Werte gerade vom Spiel gesperrt - Anzeige zeigt den letzten Stand."
@@ -109,7 +115,8 @@ if GetLocale() == "deDE" then
         "Auf deine Summe umgerechnet, damit das Ziel zu deinem Itemlevel passt."
     L["Only shown as a guide line; the best players barely use it."] =
         "Nur als Orientierungsstrich; die Besten setzen kaum darauf."
-    L["Top players"]       = "Die Besten"
+    L["Best trinkets"]     = "Bester Schmuck"
+    L["%d top players"]    = "%d Top-Spieler"
     L["Trinkets"]          = "Schmuckstücke"
     L["Embellishments"]    = "Verzierungen"
     L["Most common pair:"] = "Häufigste Kombination:"
@@ -130,7 +137,10 @@ end
 -------------------------------------------------------------------------------
 -- Aufbau
 -------------------------------------------------------------------------------
-local WIDTH       = 260
+local WIDTH       = 320     -- die vier Reiter brauchen rund 300 px; bei 260
+                            -- stand "Bester Schmuck" ueber dem Rand
+                            -- (31.10.2026). Der Rest etwas Luft fuer
+                            -- laengere Uebersetzungen.
 local PAD         = 12
 local ROW_HEIGHT  = 34
 local BAR_HEIGHT  = 8
@@ -145,8 +155,27 @@ local TABS = {
     { key = "mplus", label = "Mythic+" },
     { key = "raid",  label = "Raid" },
     { key = "gear",  label = "Gear" },
-    { key = "best",  label = "Top players" },
+    { key = "best",  label = "Best trinkets" },
 }
+
+-- Zwei Leistungsstufen für Mythic+: die Spitze wie bisher, dazu ein Alltagsband.
+-- Gemessen am 29.10.2026: bei Heilern verschiebt sich die Verteilung deutlich
+-- (Wiederherstellung Schamane, Vielseitigkeit 29 % -> 16 %), bei vielen
+-- Schadensausteilern kaum (Vergeltung: unter 1 Prozentpunkt). Beschriftet wird
+-- mit den echten Schlüsselstufen aus den Daten, damit niemand rätseln muss,
+-- welche Stichprobe er gerade sieht.
+-- Von links nach rechts aufsteigend: erst die Alltags-Schluessel, dann die
+-- hohen. "Push" ist der uebliche Sprachgebrauch fuer das Hochspielen.
+local STAGES = {
+    { key = "mplusMid", label = "Everyday keys" },
+    { key = "mplus",    label = "Push keys" },
+}
+local STAGE_H     = 18       -- Höhe der Stufenzeile, nur im Mythic+-Reiter
+local STAGE_SAME  = 0.03     -- unter 3 Pp. Unterschied: sagen, dass es gleich ist
+-- 3 statt 2 Pp.: ueber alle 40 Spezialisierungen gemessen (31.10.2026) aendert
+-- sich unter diesem Abstand die Reihenfolge der Werte nirgends, der Vorschlag
+-- bleibt also derselbe -- bei 2 Pp. blieb der Hinweis z. B. bei Vergeltung aus
+-- (2,3 Pp.), obwohl dort beide Stufen dasselbe empfehlen.
 
 -- Reihenfolge und Beschriftung. Alle vier Werte bekommen die ±5-%-Schablone,
 -- außer Werten mit unter 10 % Anteil bei den Besten: nur Strich (ns.IsGuide).
@@ -181,6 +210,7 @@ local function Round(v)
 end
 local inCombat = false
 local RefreshTabs
+local RefreshStages
 local updateQueued = false
 
 local function db()
@@ -256,6 +286,64 @@ local function GearOpts()
         if o[k] == nil then o[k] = v end
     end
     return o
+end
+
+-------------------------------------------------------------------------------
+-- Leistungsstufe: gilt pro Charakter und Spezialisierung, wie die Haken im
+-- Ausruestungs-Reiter. Sie wirkt auf alle Reiter, damit Ziele, Optimierer und
+-- "Die Besten" nie aus verschiedenen Stichproben rechnen.
+-------------------------------------------------------------------------------
+local function StageData(key)
+    local spec = CurrentSpecID()
+    local d = spec and ns.TARGETS and ns.TARGETS[spec]
+    d = d and d[key]
+    return (d and (d.players or 0) > 0) and d or nil
+end
+
+-- Die gespeicherte Wahl. Fehlen die Daten der Alltagsstufe (alte Datendatei,
+-- abgebrochener Lauf), gilt wieder die Spitze -- die ist immer vorhanden.
+-- Vorgewaehlt sind die Alltags-Schluessel: dort spielt der groesste Teil der
+-- Nutzer, die Spitzenwerte sind der Sonderfall. Fehlen Daten der gewaehlten
+-- Stufe (alte Datendatei), gilt die andere.
+local DEFAULT_STAGE = "mplusMid"
+
+local function Stage()
+    local c = CharData()
+    c.stage = c.stage or {}
+    local key = c.stage[CurrentSpecID() or 0] or DEFAULT_STAGE
+    if not StageData(key) then
+        return key == DEFAULT_STAGE and "mplus" or DEFAULT_STAGE
+    end
+    return key
+end
+
+local function SetStage(key)
+    local c = CharData()
+    c.stage = c.stage or {}
+    if c.stage[CurrentSpecID() or 0] == key then return end
+    c.stage[CurrentSpecID() or 0] = key
+    -- Die Ausruestungs-Rechnung gilt immer fuer eine Stufe: nach dem Wechsel
+    -- muss sie neu laufen, sonst landete sie unter dem Set-Namen der anderen.
+    if ns.StageChanged then ns.StageChanged() end
+end
+
+-- Welcher Schluessel in ns.TARGETS gilt gerade? Fuer Mythic+ die Stufe, sonst
+-- der Reiter selbst.
+local function ActiveMode(tab)
+    tab = tab or db().tab
+    if tab == "mplus" then return Stage() end
+    return tab
+end
+
+-- Liegen beide Stufen praktisch gleich? Dann sagen wir das lieber, als den
+-- Nutzer raetseln zu lassen, warum sich beim Umschalten nichts bewegt.
+local function StagesAlike()
+    local a, b = StageData("mplus"), StageData("mplusMid")
+    if not (a and b and a.share and b.share) then return false end
+    for key, value in pairs(a.share) do
+        if math.abs(value - (b.share[key] or 0)) > STAGE_SAME then return false end
+    end
+    return true
 end
 
 -- Wie weit ist der Wert vom Zielbereich entfernt? Gerundet und vorzeichenbehaftet:
@@ -558,6 +646,15 @@ local function FormatDate(iso)
     return iso or ""
 end
 
+-- Die Zeilen haengen bei ihrer Erzeugung an HEADER. Kommt die Stufenzeile
+-- hinzu, muessen sie um deren Hoehe nach unten -- deshalb hier jedes Mal neu.
+local function PlaceRows(top)
+    for i, row in ipairs(rows) do
+        row:ClearAllPoints()
+        row:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, -(top + (i - 1) * ROW_HEIGHT))
+    end
+end
+
 local function Update()
     updateQueued = false
     if not frame then return end
@@ -566,7 +663,11 @@ local function Update()
 
     local specID = CurrentSpecID()
     local specData = specID and ns.TARGETS and ns.TARGETS[specID]
-    local data = specData and specData[db().tab]
+    local data = specData and specData[ActiveMode()]
+    -- Wo die Stufenzeile steht, beginnt der Inhalt eine Zeile tiefer.
+    RefreshStages()
+    local withStage = frame.stages and frame.stages[1] and frame.stages[1]:IsShown()
+    local top = HEADER + (withStage and STAGE_H or 0)
 
     -- Vierter Reiter: Was die Besten tragen
     if db().tab == "best" then
@@ -574,11 +675,17 @@ local function Update()
         frame.legend:Hide()
         frame.buffNote:Hide()
         frame.message:Hide()
+        frame.stageNote:Hide()
         if ns.HideGearTab then ns.HideGearTab() end
-        local data = specData and specData[db().bestFor or "mplus"]
+        -- Gleiche Stichprobe wie die Zielwerte: im Mythic+-Teil gilt die Stufe.
+        local data = specData and specData[ActiveMode(db().bestFor or "mplus")]
         local g = data and data.gear
         frame.subtitle:SetText(g and g.players
             and string.format(L["%d top players"] or "%d", g.players) or "")
+        if ns.BestPanel then
+            ns.BestPanel:ClearAllPoints()
+            ns.BestPanel:SetPoint("TOPLEFT", PAD, -top)
+        end
         local h = ns.ShowBestTab and ns.ShowBestTab() or 0
         frame.explain:ClearAllPoints()
         if ns.BestPanel and ns.BestPanel.text then
@@ -593,7 +700,7 @@ local function Update()
         frame.footer:SetText("")
         local eh = frame.explain:GetStringHeight()
         eh = math.max(EXPLAIN_H, (type(eh) == "number" and eh or 0) + 10)
-        frame:SetHeight(PanelHeight(HEADER + h + eh + 24))
+        frame:SetHeight(PanelHeight(top + h + eh + 24))
         return
     end
     if ns.HideBestTab then ns.HideBestTab() end
@@ -604,6 +711,7 @@ local function Update()
         frame.legend:Hide()
         frame.buffNote:Hide()
         frame.message:Hide()
+        frame.stageNote:Hide()
         frame.explain:ClearAllPoints()
         -- Im Ausruestungs-Reiter haengt der Regeltext UNTER dem Ergebnis, nicht
         -- am Fensterboden: festgehaltene Plaetze und Wechselliste schieben den
@@ -622,13 +730,17 @@ local function Update()
             for _, st in ipairs(STATS) do total = total + ratings[st.key] end
             frame.subtitle:SetText(string.format(L["Your stat total %d"], Round(total)))
         end
+        if ns.GearPanel then
+            ns.GearPanel:ClearAllPoints()
+            ns.GearPanel:SetPoint("TOPLEFT", PAD, -top)
+        end
         local h = ns.ShowGearTab and ns.ShowGearTab() or 0
         -- Echte Hoehe des Regeltexts nehmen, nicht die Pauschale: er ist je nach
         -- Sprache vier bis sechs Zeilen hoch und haengt unter dem Ergebnis.
         -- Sonst endet der Rahmen mitten im Text.
         local eh = frame.explain:GetStringHeight()
         eh = math.max(EXPLAIN_H, (type(eh) == "number" and eh or 0) + 10)
-        frame:SetHeight(PanelHeight(HEADER + h + eh + 24))
+        frame:SetHeight(PanelHeight(top + h + eh + 24))
         return
     end
     if ns.HideGearTab then ns.HideGearTab() end
@@ -638,6 +750,7 @@ local function Update()
         frame.legend:Hide()
         frame.buffNote:Hide()
         frame.explain:Hide()
+        frame.stageNote:Hide()
         frame.subtitle:SetText("")
         frame.message:SetText(specData and L["No targets for this content yet."]
                               or L["No targets for this specialization yet."])
@@ -671,7 +784,17 @@ local function Update()
     frame.legend:SetShown(buffTotal > 0)
     frame.explain:ClearAllPoints()
     frame.explain:SetPoint("BOTTOMLEFT", PAD, buffTotal > 0 and 40 or 24)
+
+    -- Zwei Hinweiszeilen unter den Balken, beide in derselben Spur: der lila
+    -- Buff-Hinweis hat Vorrang, sonst der Satz zu gleichen Stufen. Wer etwas
+    -- einblendet, muss es ueberall ausblenden -- deshalb beide hier entscheiden.
+    local noteTop = -(top + (#STATS + 1) * ROW_HEIGHT + 6)
+    frame.buffNote:ClearAllPoints()
+    frame.buffNote:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, noteTop)
     frame.buffNote:SetShown(buffTotal > 0)
+    frame.stageNote:ClearAllPoints()
+    frame.stageNote:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, noteTop)
+    frame.stageNote:SetShown(buffTotal == 0 and db().tab == "mplus" and StagesAlike())
 
     local t = data.total
     if t then
@@ -696,6 +819,7 @@ local function Update()
         DrawRow(row, result[def.key])
         row:Show()
     end
+    PlaceRows(top)
 
     frame.subtitle:SetText(string.format(L["Your stat total %d"], Round(result.total)))
     if data.minKey then
@@ -713,7 +837,7 @@ local function Update()
         frame.footer:SetText(string.format(L["%d top players · mythic · as of %s"],
             data.players, FormatDate(data.date)))
     end
-    frame:SetHeight(PanelHeight(HEADER + (#STATS + 1) * ROW_HEIGHT + 38 + EXPLAIN_H))
+    frame:SetHeight(PanelHeight(top + (#STATS + 1) * ROW_HEIGHT + 38 + EXPLAIN_H))
 end
 
 -- Beim Umrüsten feuern mehrere Ereignisse kurz nacheinander. Eine einzige
@@ -837,6 +961,49 @@ local function HookCharacterWindow()
     end
 end
 
+-- Beschriftung, Linie und Verfuegbarkeit der Stufenzeile. Die Schluesselstufen
+-- kommen aus den Daten, nicht aus festen Zahlen -- verschiebt sich das Band
+-- naechste Woche, stimmt die Anzeige trotzdem.
+function RefreshStages()
+    if not frame or not frame.stages then return end
+    -- Sichtbar im Mythic+-Reiter und im Ausruestungs-Reiter, solange der gegen
+    -- Mythic+ rechnet. Beide Stellen schalten dieselbe gespeicherte Stufe.
+    local show = db().tab == "mplus"
+        or (db().tab == "gear" and (db().optFor or "mplus") == "mplus")
+        or (db().tab == "best" and (db().bestFor or "mplus") == "mplus")
+    local active = Stage()
+    local previous
+    for _, b in ipairs(frame.stages) do
+        b:SetShown(show)
+        if show then
+            local data = StageData(b.key)
+            local text = L[b.label]
+            if data and data.minKey then
+                text = text .. " +" .. data.minKey
+                if data.maxKey and data.maxKey ~= data.minKey then
+                    text = text .. "-" .. data.maxKey
+                end
+            end
+            b.text:SetText(text)
+            b:SetWidth(math.ceil(b.text:GetStringWidth() or 40) + 12)
+            if data then
+                b.text:SetTextColor(1, 1, 1)
+            else
+                -- Keine Daten: ausgegraut statt leer, damit der Reiter benutzbar bleibt
+                b.text:SetTextColor(0.45, 0.45, 0.45)
+            end
+            b.line:SetShown(b.key == active)
+            b:ClearAllPoints()
+            if previous then
+                b:SetPoint("LEFT", previous, "RIGHT", 8, 0)
+            else
+                b:SetPoint("TOPLEFT", PAD - 6, -(34 + TAB_H + 2))
+            end
+            previous = b
+        end
+    end
+end
+
 function RefreshTabs()
     if not frame or not frame.tabs then return end
     local current = db().tab
@@ -849,6 +1016,7 @@ ns.UI = {
     L = L, db = db, PAD = PAD, WIDTH = WIDTH, HEADER = HEADER, COLORS = COLORS,
     Round = Round, Rating = Rating, ReadRatings = ReadRatings, CurrentSpecID = CurrentSpecID,
     GearOpts = GearOpts, CharData = CharData,
+    ActiveMode = ActiveMode, Stage = Stage, StageData = StageData,
     IsInCombat = function() return inCombat end,
     Update = function() Update() end,
 }
@@ -912,6 +1080,41 @@ local function CreateMainFrame()
     end
     RefreshTabs()
 
+    -- Stufenzeile unter den Reitern: gleiche Mechanik wie die Reiter selbst
+    -- (Text, darunter die Cyan-Linie beim gewählten), nur kleiner. Sichtbar ist
+    -- sie allein im Mythic+-Reiter.
+    frame.stages = {}
+    local prevStage
+    for _, info in ipairs(STAGES) do
+        local b = CreateFrame("Button", nil, frame)
+        b.key = info.key
+        b.label = info.label
+        b.text = b:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
+        b.text:SetPoint("CENTER")
+        b.text:SetText(L[info.label])
+        b:SetSize(math.ceil(b.text:GetStringWidth() or 40) + 12, STAGE_H - 2)
+        b.line = b:CreateTexture(nil, "OVERLAY")
+        b.line:SetPoint("BOTTOMLEFT")
+        b.line:SetPoint("BOTTOMRIGHT")
+        b.line:SetHeight(2)
+        b.line:SetColorTexture(COLORS.band[1], COLORS.band[2], COLORS.band[3], 0.9)
+        b.highlight = b:CreateTexture(nil, "HIGHLIGHT")
+        b.highlight:SetAllPoints()
+        b.highlight:SetColorTexture(1, 1, 1, 0.08)
+        b:SetScript("OnClick", function(self)
+            if not StageData(self.key) then return end     -- ausgegraut: nichts tun
+            SetStage(self.key)
+            Update()
+        end)
+        if prevStage then
+            b:SetPoint("LEFT", prevStage, "RIGHT", 8, 0)
+        else
+            b:SetPoint("TOPLEFT", PAD - 6, -(34 + TAB_H + 2))
+        end
+        prevStage = b
+        table.insert(frame.stages, b)
+    end
+
     if ns.CreateGearTab then ns.CreateGearTab(frame) end
     if ns.CreateBestTab then ns.CreateBestTab(frame) end
 
@@ -933,6 +1136,18 @@ local function CreateMainFrame()
     frame.buffNote:SetTextColor(COLORS.buff[1], COLORS.buff[2], COLORS.buff[3])
     frame.buffNote:SetText(L["Flask and food count towards your total - that is why they raise the targets of the other stats as well."])
     frame.buffNote:Hide()
+
+    -- Grauer Hinweis in derselben Spur wie der Buff-Hinweis: erscheint, wenn
+    -- beide Stufen praktisch gleich verteilen. Sonst wundert sich der Nutzer,
+    -- warum das Umschalten nichts bewegt.
+    frame.stageNote = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    frame.stageNote:SetWidth(WIDTH - PAD * 2)
+    frame.stageNote:SetJustifyH("LEFT")
+    frame.stageNote:SetWordWrap(true)
+    frame.stageNote:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD,
+        -(HEADER + STAGE_H + (#STATS + 1) * ROW_HEIGHT + 6))
+    frame.stageNote:SetText(L["For this spec both levels give almost the same targets - switching changes little."])
+    frame.stageNote:Hide()
 
     frame.legend = CreateFrame("Frame", nil, frame)
     frame.legend:SetSize(WIDTH - PAD * 2, 12)

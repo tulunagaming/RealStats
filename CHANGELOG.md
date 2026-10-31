@@ -1,5 +1,25 @@
 # Changelog
 
+## 1.2.0
+
+* **Zwei Leistungsstufen fuer Mythic+.** Ueber den Balken steht jetzt eine
+  Zeile mit „Alltag +12-16" und „Push +22-24". Die Zielwerte der Spitze stammen
+  von Spielern auf sehr hohen Schluesseln - wer +12 bis +16 laeuft, bekommt mit
+  der Alltagsstufe die passenderen Zahlen. Vorgewaehlt ist der Alltag.
+  Der Unterschied ist je nach Spezialisierung gross oder klein: Bei Heilern und
+  Tanks dreht sich die Reihenfolge der Werte teils um (Heilig-Paladin,
+  Bewahrer-Rufer, Wiederherstellungs-Schamane), bei den meisten
+  Schadensverursachern aendert sich fast nichts. Ist der Unterschied gering,
+  sagt das Addon es ausdruecklich, damit niemand einen Fehler vermutet.
+  Die Stufe gilt auch fuer den Ausruestungs-Rechner und den Schmuck-Reiter und
+  wird je Charakter und Spezialisierung gemerkt. Der Ausruestungs-Rechner legt
+  je Stufe ein eigenes Set an („RealStats M+" und „RealStats M+ Everyday").
+* Der Reiter „Die Besten" heisst jetzt **„Bester Schmuck"** - er zeigt
+  Schmuckstuecke und Verzierungen, der alte Name versprach mehr.
+* Das Fenster ist etwas breiter, damit die Reiterzeile vollstaendig hineinpasst.
+* Zielwerte vom 31.10.2026: 120 Abrufe ueber alle Spezialisierungen in Mythic+
+  (beide Stufen) und Raid, 10247 ausgewertete Spieler (kleinste Gruppe 52).
+
 ## 1.1.1
 
 * Zielwerte vom 23.10.2026: 80 Abrufe ueber alle Spezialisierungen in Mythic+ und Raid, 6575 ausgewertete Spieler (kleinste Gruppe 49).

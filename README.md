@@ -79,7 +79,7 @@ away, below it how much is missing.
   (tested: 1000 buff changes -> 1 refresh).
 * The gear calculation only runs when you press *Calculate*.
 * Values that WoW 12.x hides ("secret values") are handled without Lua errors.
-* More than 200 automated checks run before every release.
+* More than 300 automated checks run before every release.
 
 ## Usage
 
