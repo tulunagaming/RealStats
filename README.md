@@ -16,13 +16,33 @@ actually distribute theirs. Docks to the right of the character window.
   roughly what item upgrades can still give you.
 * Targets for every class and specialization, updated every week (Wednesday).
 
+## Two key levels for Mythic+
+
+The line above the bars switches between **Everyday keys** (+12-16) and
+**Push keys** (the highest keys being run). The top logs come from players on
+very high keys - if you run +12 to +16, the everyday level fits you better.
+Everyday is preselected.
+
+How much this matters depends on your specialization. For healers and tanks the
+order of the stats can change completely (Holy Paladin, Preservation Evoker,
+Restoration Shaman), for most damage dealers barely anything moves. When both
+levels are nearly the same, RealStats says so, so nothing looks broken.
+
+The choice is remembered per character and specialization and also applies to
+the gear optimizer and the trinket tab.
+
+![RealStats: Best trinkets tab, switched to the everyday keys](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-best-trinkets.jpg)
+
 ## Tabs
 
 * **Mythic+** and **Raid**: separate targets, because the best players gear
   differently for each.
+* **Best trinkets**: which trinkets and embellishments the best players of your
+  spec wear, in percent, next to what you wear yourself.
 * **Gear**: finds the combination of equipped items and items in your bags that
   comes closest to the targets, equips it with one click and saves it as an
-  equipment set ("RealStats M+" / "RealStats Raid").
+  equipment set. Each key level gets its own set ("RealStats M+",
+  "RealStats M+ Everyday", "RealStats Raid"), so they never overwrite each other.
   Only bound items, at most 2 embellishments, set bonus kept, weapon style kept
   (two-hander, shield, dual wield, ranged), trinkets stay.
 
@@ -45,6 +65,8 @@ and balances over the remaining ones. Useful for a freshly socketed piece, a
 favourite look or anything you simply do not want touched. Saved per character
 and specialization, like the check boxes.
 
+![RealStats: pick a slot the optimizer has to leave alone](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-gear-keep-slot.jpg)
+
 ### Back to what you wore
 
 Next to the set button: **Back to previous** re-equips what you wore before the
@@ -64,12 +86,13 @@ Because they count towards your stat total, they also raise the targets of the
 so right under the bars whenever a fixed buff is active, so the numbers never
 look like a miscalculation.
 
-![RealStats: tooltip above the target - how much to give away](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-tooltip-above.jpg)
+![RealStats: tooltip on the total - median, mean and item level of the best](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-tooltip-total.jpg)
 
-![RealStats: tooltip below the target - how much is missing](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-tooltip-below.jpg)
+![RealStats: tooltip on a stat - how far you are from the range](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-tooltip-stat.jpg)
 
 The tooltip works both ways: above the range it tells you how much to give
-away, below it how much is missing.
+away, below it how much is missing. On the total line it compares your stat
+total and item level with the best players.
 
 ## Performance & stability
 
