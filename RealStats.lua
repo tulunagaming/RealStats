@@ -40,7 +40,9 @@ if GetLocale() == "deDE" then
     L["Optimize for:"]     = "Optimieren für:"
     L["Calculate"]         = "Berechnen"
     L["Equip"]             = "Anlegen"
-    L["Save as set: %s"]   = "Als Set speichern: %s"
+    -- Ohne "Als": mit dem laengeren Set-Namen "RealStats M+ Everyday" lief die
+    -- Beschriftung sonst ueber den Knopf hinaus (31.10.2026).
+    L["Save as set: %s"]   = "Set speichern: %s"
     L["Calculate and equip first, then save the result as a set."] =
         "Erst berechnen und anlegen, dann das Ergebnis als Set speichern."
     L["Set \"%s\" saved in the equipment manager."] = "Set \"%s\" im Ausrüstungsmanager gespeichert."
@@ -83,7 +85,7 @@ if GetLocale() == "deDE" then
     L["Your stat total %d"] = "Die Summe deiner Werte %d"
     L["No targets for this specialization yet."] = "Für diese Spezialisierung gibt es noch keine Zielwerte."
     L["No targets for this content yet."] = "Für diesen Inhalt gibt es noch keine Zielwerte."
-    L["%d top players · mythic · as of %s"] = "%d Top-Spieler · mythisch · Stand %s"
+    L["%d best · mythic · as of %s"] = "%d Beste · mythisch · Stand %s"
     L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, keys +%d-%d). Their shares times your stat total (%d) give your targets. In target = within ±5 %%."] =
         "Ziele: So verteilen die %d besten Spieler deiner Spezialisierung ihre Sekundärwerte (Warcraft Logs, Schlüssel +%d-%d). Ihre Anteile mal der Summe deiner Werte (%d) ergeben deine Ziele. Im Ziel = höchstens ±5 %% Abweichung."
     L["Targets: how the %d best players of your spec split their secondary stats (Warcraft Logs, mythic raid). Their shares times your stat total (%d) give your targets. In target = within ±5 %%."] =
@@ -91,13 +93,17 @@ if GetLocale() == "deDE" then
     L["Push keys"]          = "Push"
     L["Everyday keys"]      = "Alltag"
     L["+%d-%d"]             = "+%d-%d"
+    L["No flask or food active - the best players have both, part of the gap comes from that."] =
+        "Ohne Fläschchen und Essen - die Besten haben beides, ein Teil des Rückstands kommt daher."
     L["For this spec both levels give almost the same targets - switching changes little."] =
         "Bei dieser Spezialisierung sind die Ziele auf beiden Stufen fast gleich - Umschalten ändert kaum etwas."
     L["No data for everyday keys yet."] = "Für Alltags-Schlüssel gibt es noch keine Daten."
     L["Frozen during combat"] = "Im Kampf eingefroren"
     L["Stats are hidden by the game right now - showing the last values."] =
         "Werte gerade vom Spiel gesperrt - Anzeige zeigt den letzten Stand."
-    L["%d top players · keys +%d-%d · as of %s"] = "%d Top-Spieler · +%d-%d · Stand %s"
+    -- "Beste auf +12-16" statt "Top-Spieler": auf der Alltagsstufe sind es die
+    -- besten Logs dieses Schluesselbands, nicht die Weltspitze (31.10.2026).
+    L["%d best on keys +%d-%d · as of %s"] = "%d Beste auf +%d-%d · Stand %s"
     L["Your value"]        = "Dein Wert"
     L["from gear"]         = "davon Ausrüstung"
     L["Purple: fixed buffs (flask, food)"] = "Lila: feste Buffs (Fläschchen, Essen)"
@@ -115,10 +121,42 @@ if GetLocale() == "deDE" then
         "Auf deine Summe umgerechnet, damit das Ziel zu deinem Itemlevel passt."
     L["Only shown as a guide line; the best players barely use it."] =
         "Nur als Orientierungsstrich; die Besten setzen kaum darauf."
-    L["Best trinkets"]     = "Bester Schmuck"
-    L["%d top players"]    = "%d Top-Spieler"
+    L["Trinkets tab"]      = "Trinkets"
+    L["Embellishment tab"] = "Verzierung"
+    L["Which embellishments the best players of your spec use, and what your own gem colours mean."] =
+        "Welche Verzierungen die Besten deiner Spezialisierung nutzen - und was deine eigenen Edelsteinfarben bedeuten."
+    L["Most common combinations"] = "Häufigste Kombinationen"
+    L["Single"]            = "Einzeln"
+    L["alone"]             = "allein"
+    L["Armor"]             = "Rüstung"
+    L["Weapon"]            = "Waffe"
+    L["Any slot"]          = "Alle Plätze"
+    L["Ring"]              = "Ring"
+    L["No embellishment equipped."] = "Du trägst keine Verzierung."
+    L["Works - you wear a jewelcrafting embellishment."] =
+        "Wirkt - du trägst eine Juwelierskunst-Verzierung."
+    L["Does nothing without a jewelcrafting embellishment."] =
+        "Ohne Juwelierskunst-Verzierung wirkungslos."
+    L["%d %% of the best use this combination."] =
+        "%d %% der Besten fahren diese Kombination."
+    L["Most common instead: %s (%d %%)."] = "Häufiger ist: %s (%d %%)."
+    L["This combination is rare among the best."] =
+        "Diese Kombination ist bei den Besten selten."
+    L["mostly %s"]         = "meist %s"
+    L["Your gem colours"]  = "Deine Edelsteinfarben"
+    L["You wear %d gems, %d of them %s."] = "Du trägst %d Steine, davon %d in %s."
+    L["That summons %s: %s, in about %d %% of procs."] =
+        "Das beschwört %s: %s, bei etwa %d %% der Auslösungen."
+    L["%s would summon %s instead: %s."] = "%s würde stattdessen %s beschwören: %s."
+    L["%d %% of the best wear %s - that summons %s: %s."] =
+        "%d %% der Besten tragen %s - das beschwört %s: %s."
+    L["%d %% of the best wear the same colour."] =
+        "%d %% der Besten tragen dieselbe Farbe."
+    L["Each extra colour adds another Loa and lowers the chance."] =
+        "Jede weitere Farbe wirft einen Loa mehr in den Topf und senkt die Chance."
+    L["%d best players"]   = "%d beste Spieler"
     L["Trinkets"]          = "Schmuckstücke"
-    L["Embellishments"]    = "Verzierungen"
+    L["Embellished items"] = "Verzierte Teile"
     L["Most common pair:"] = "Häufigste Kombination:"
     L["You wear"]          = "Du trägst"
     L["rare among the best"] = "bei den Besten selten"
@@ -130,6 +168,8 @@ if GetLocale() == "deDE" then
     L["Show:"]             = "Anzeigen:"
     L["What the %d best players of your spec wear. Same sample as the targets."] =
         "Was die %d besten Spieler deiner Spezialisierung tragen - dieselbe Stichprobe wie bei den Zielwerten."
+    L["Embellished items: the logs only say that a piece is embellished, not which embellishment is in it."] =
+        "Verzierte Teile: Die Logs sagen nur, dass ein Teil verziert ist - nicht, welche Verzierung darin steckt."
     L["Click: expand"]   = "Klick: ausklappen"
     L["Click: collapse"] = "Klick: einklappen"
 end
@@ -137,7 +177,7 @@ end
 -------------------------------------------------------------------------------
 -- Aufbau
 -------------------------------------------------------------------------------
-local WIDTH       = 320     -- die vier Reiter brauchen rund 300 px; bei 260
+local WIDTH       = 350     -- die fuenf Reiter brauchen rund 338 px; bei 260
                             -- stand "Bester Schmuck" ueber dem Rand
                             -- (31.10.2026). Der Rest etwas Luft fuer
                             -- laengere Uebersetzungen.
@@ -155,7 +195,8 @@ local TABS = {
     { key = "mplus", label = "Mythic+" },
     { key = "raid",  label = "Raid" },
     { key = "gear",  label = "Gear" },
-    { key = "best",  label = "Best trinkets" },
+    { key = "best",  label = "Trinkets tab" },
+    { key = "emb",   label = "Embellishment tab" },
 }
 
 -- Zwei Leistungsstufen für Mythic+: die Spitze wie bisher, dazu ein Alltagsband.
@@ -632,11 +673,29 @@ local function DrawRow(row, info)
 end
 
 -- Angedockt übernimmt das Fenster die Höhe des Charakterfensters.
-local function PanelHeight(natural)
+-- Angedockt richtet sich das Fenster nach dem Charakterfenster: nie kuerzer,
+-- aber auch nie laenger -- darunter hinauszuwachsen sieht aus wie ein Fehler
+-- (Roy, 01.11.2026). Passt der Inhalt nicht, weicht er in eine zweite Spalte
+-- aus, das Fenster wird breiter statt hoeher.
+-- deckeln = true: Der Reiter verteilt seinen Inhalt notfalls auf Spalten, dann
+-- bleibt die Hoehe beim Charakterfenster. Ohne das waechst das Fenster weiter
+-- nach unten -- noetig beim Ausruestungs-Reiter, dessen Wechselliste bis zu
+-- 670 Pixel braucht und sich nicht umbrechen laesst.
+local function PanelHeight(natural, deckeln)
     if db().docked and CharacterFrame and CharacterFrame.GetHeight then
-        return math.max(natural, CharacterFrame:GetHeight() or 0)
+        local h = CharacterFrame:GetHeight() or natural
+        if deckeln then return h end
+        return math.max(natural, h)
     end
     return natural
+end
+
+-- Wie viele Zeilen passen neben das Charakterfenster? Fuer Reiter, die ihren
+-- Inhalt auf Spalten verteilen.
+function ns.RowsPerColumn(top, rowHeight)
+    local hoehe = (db().docked and CharacterFrame and CharacterFrame.GetHeight
+                   and CharacterFrame:GetHeight()) or 520
+    return math.max(6, math.floor((hoehe - top - 60) / (rowHeight or 16)))
 end
 
 -- "2026-09-16" -> "16.09.2026" auf Deutsch, sonst unverändert.
@@ -664,29 +723,71 @@ local function Update()
     local specID = CurrentSpecID()
     local specData = specID and ns.TARGETS and ns.TARGETS[specID]
     local data = specData and specData[ActiveMode()]
-    -- Wo die Stufenzeile steht, beginnt der Inhalt eine Zeile tiefer.
+    -- Der Platz der Stufenzeile bleibt in jedem Reiter frei, auch wo sie nie
+    -- erscheint (Raid). Sonst springt der Inhalt beim Umschalten nach oben
+    -- (Roy, 01.11.2026).
     RefreshStages()
-    local withStage = frame.stages and frame.stages[1] and frame.stages[1]:IsShown()
-    local top = HEADER + (withStage and STAGE_H or 0)
+    local top = HEADER + STAGE_H
 
     -- Vierter Reiter: Was die Besten tragen
+    -- Fuenfter Reiter: Verzierungen und Edelsteinfarben
+    if db().tab == "emb" then
+        for _, row in ipairs(rows) do row:Hide() end
+        frame.legend:Hide()
+        frame.buffNote:Hide()
+        frame.message:Hide()
+        frame.stageNote:Hide()
+        frame.noBuffNote:Hide()
+        if ns.HideGearTab then ns.HideGearTab() end
+        if ns.HideBestTab then ns.HideBestTab() end
+        local data = specData and specData[ActiveMode(db().bestFor or "mplus")]
+        local g = data and data.gear
+        frame.subtitle:SetText(g and g.players
+            and string.format(L["%d best players"] or "%d", g.players) or "")
+        if ns.EmbellishPanel then
+            ns.EmbellishPanel:ClearAllPoints()
+            ns.EmbellishPanel:SetPoint("TOPLEFT", PAD, -top)
+        end
+        local h = ns.ShowEmbellishTab and ns.ShowEmbellishTab() or 0
+        -- Nur dieser Reiter wird breit, und nur wenn er zwei Spalten braucht.
+        local breite = (ns.EmbellishWidth and ns.EmbellishWidth() or 0) + PAD * 2
+        frame:SetWidth(math.max(WIDTH, breite))
+        frame.explain:SetWidth(math.max(WIDTH, breite) - PAD * 2)
+        frame.explain:ClearAllPoints()
+        frame.explain:SetPoint("BOTTOMLEFT", PAD, 24)
+        frame.explain:SetText(L["Which embellishments the best players of your spec use, and what your own gem colours mean."])
+        frame.explain:SetShown(true)
+        frame.footer:SetText("")
+        local eh = frame.explain:GetStringHeight()
+        eh = math.max(EXPLAIN_H, (type(eh) == "number" and eh or 0) + 10)
+        frame:SetHeight(PanelHeight(top + h + eh + 24, true))
+        return
+    end
+    if ns.HideEmbellishTab then ns.HideEmbellishTab() end
+    frame:SetWidth(WIDTH)
+    frame.explain:SetWidth(WIDTH - PAD * 2)
+
     if db().tab == "best" then
         for _, row in ipairs(rows) do row:Hide() end
         frame.legend:Hide()
         frame.buffNote:Hide()
         frame.message:Hide()
         frame.stageNote:Hide()
+        frame.noBuffNote:Hide()
         if ns.HideGearTab then ns.HideGearTab() end
         -- Gleiche Stichprobe wie die Zielwerte: im Mythic+-Teil gilt die Stufe.
         local data = specData and specData[ActiveMode(db().bestFor or "mplus")]
         local g = data and data.gear
         frame.subtitle:SetText(g and g.players
-            and string.format(L["%d top players"] or "%d", g.players) or "")
+            and string.format(L["%d best players"] or "%d", g.players) or "")
         if ns.BestPanel then
             ns.BestPanel:ClearAllPoints()
             ns.BestPanel:SetPoint("TOPLEFT", PAD, -top)
         end
         local h = ns.ShowBestTab and ns.ShowBestTab() or 0
+        local breiteB = (ns.BestWidth and ns.BestWidth() or 0) + PAD * 2
+        frame:SetWidth(math.max(WIDTH, breiteB))
+        frame.explain:SetWidth(math.max(WIDTH, breiteB) - PAD * 2)
         frame.explain:ClearAllPoints()
         if ns.BestPanel and ns.BestPanel.text then
             frame.explain:SetPoint("TOPLEFT", ns.BestPanel.text, "BOTTOMLEFT", 0, -10)
@@ -694,16 +795,22 @@ local function Update()
             frame.explain:SetPoint("BOTTOMLEFT", PAD, 24)
         end
         frame.explain:SetText(g and g.players
-            and string.format(L["What the %d best players of your spec wear. Same sample as the targets."], g.players)
+            and (string.format(L["What the %d best players of your spec wear. Same sample as the targets."], g.players)
+                 -- Ehrlich bleiben: die Prozentzahl unter "Verzierte Teile" gilt dem
+                 -- Teil, nicht der Verzierung darin. Warcraft Logs gibt nur ein
+                 -- Ja/Nein heraus (geprueft 31.10.2026 an den Bonus-IDs).
+                 .. " " .. L["Embellished items: the logs only say that a piece is embellished, not which embellishment is in it."])
             or "")
         frame.explain:SetShown(g ~= nil)
         frame.footer:SetText("")
         local eh = frame.explain:GetStringHeight()
         eh = math.max(EXPLAIN_H, (type(eh) == "number" and eh or 0) + 10)
-        frame:SetHeight(PanelHeight(top + h + eh + 24))
+        frame:SetHeight(PanelHeight(top + h + eh + 24, true))
         return
     end
     if ns.HideBestTab then ns.HideBestTab() end
+    frame:SetWidth(WIDTH)
+    frame.explain:SetWidth(WIDTH - PAD * 2)
 
     -- Dritter Reiter: Ausrüstung optimieren
     if db().tab == "gear" then
@@ -712,6 +819,7 @@ local function Update()
         frame.buffNote:Hide()
         frame.message:Hide()
         frame.stageNote:Hide()
+        frame.noBuffNote:Hide()
         frame.explain:ClearAllPoints()
         -- Im Ausruestungs-Reiter haengt der Regeltext UNTER dem Ergebnis, nicht
         -- am Fensterboden: festgehaltene Plaetze und Wechselliste schieben den
@@ -751,6 +859,7 @@ local function Update()
         frame.buffNote:Hide()
         frame.explain:Hide()
         frame.stageNote:Hide()
+        frame.noBuffNote:Hide()
         frame.subtitle:SetText("")
         frame.message:SetText(specData and L["No targets for this content yet."]
                               or L["No targets for this specialization yet."])
@@ -792,9 +901,18 @@ local function Update()
     frame.buffNote:ClearAllPoints()
     frame.buffNote:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, noteTop)
     frame.buffNote:SetShown(buffTotal > 0)
+    -- Ohne feste Buffs liegt die eigene Summe unter der der Besten, die beim
+    -- Kampfbeginn Flaeschchen und Essen hatten. Das sagen wir, statt den Nutzer
+    -- vor einer unerklaerten Luecke stehen zu lassen.
+    local fehltBuff = buffTotal == 0 and data.total ~= nil
+        and result.total < data.total.median
+    frame.noBuffNote:ClearAllPoints()
+    frame.noBuffNote:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, noteTop)
+    frame.noBuffNote:SetShown(fehltBuff)
     frame.stageNote:ClearAllPoints()
     frame.stageNote:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD, noteTop)
-    frame.stageNote:SetShown(buffTotal == 0 and db().tab == "mplus" and StagesAlike())
+    frame.stageNote:SetShown(buffTotal == 0 and not fehltBuff
+        and db().tab == "mplus" and StagesAlike())
 
     local t = data.total
     if t then
@@ -831,10 +949,10 @@ local function Update()
     end
     frame.explain:Show()
     if data.minKey then
-        frame.footer:SetText(string.format(L["%d top players · keys +%d-%d · as of %s"],
+        frame.footer:SetText(string.format(L["%d best on keys +%d-%d · as of %s"],
             data.players, data.minKey, data.maxKey, FormatDate(data.date)))
     else
-        frame.footer:SetText(string.format(L["%d top players · mythic · as of %s"],
+        frame.footer:SetText(string.format(L["%d best · mythic · as of %s"],
             data.players, FormatDate(data.date)))
     end
     frame:SetHeight(PanelHeight(top + (#STATS + 1) * ROW_HEIGHT + 38 + EXPLAIN_H))
@@ -971,6 +1089,7 @@ function RefreshStages()
     local show = db().tab == "mplus"
         or (db().tab == "gear" and (db().optFor or "mplus") == "mplus")
         or (db().tab == "best" and (db().bestFor or "mplus") == "mplus")
+        or (db().tab == "emb" and (db().bestFor or "mplus") == "mplus")
     local active = Stage()
     local previous
     for _, b in ipairs(frame.stages) do
@@ -1014,6 +1133,7 @@ end
 
 ns.UI = {
     L = L, db = db, PAD = PAD, WIDTH = WIDTH, HEADER = HEADER, COLORS = COLORS,
+    RowsPerColumn = ns.RowsPerColumn,
     Round = Round, Rating = Rating, ReadRatings = ReadRatings, CurrentSpecID = CurrentSpecID,
     GearOpts = GearOpts, CharData = CharData,
     ActiveMode = ActiveMode, Stage = Stage, StageData = StageData,
@@ -1117,6 +1237,7 @@ local function CreateMainFrame()
 
     if ns.CreateGearTab then ns.CreateGearTab(frame) end
     if ns.CreateBestTab then ns.CreateBestTab(frame) end
+    if ns.CreateEmbellishTab then ns.CreateEmbellishTab(frame) end
 
     frame.message = frame:CreateFontString(nil, "OVERLAY", "GameFontDisable")
     frame.message:SetPoint("TOPLEFT", PAD, -HEADER)
@@ -1148,6 +1269,18 @@ local function CreateMainFrame()
         -(HEADER + STAGE_H + (#STATS + 1) * ROW_HEIGHT + 6))
     frame.stageNote:SetText(L["For this spec both levels give almost the same targets - switching changes little."])
     frame.stageNote:Hide()
+
+    -- Fehlen Flaeschchen und Essen, sieht der Nutzer sonst nur einen
+    -- unerklaerten Rueckstand in der Summe -- die Besten haben beides beim
+    -- Kampfbeginn (aufgefallen 31.10.2026 an Roys eigener Anzeige).
+    frame.noBuffNote = frame:CreateFontString(nil, "OVERLAY", "GameFontDisableSmall")
+    frame.noBuffNote:SetWidth(WIDTH - PAD * 2)
+    frame.noBuffNote:SetJustifyH("LEFT")
+    frame.noBuffNote:SetWordWrap(true)
+    frame.noBuffNote:SetPoint("TOPLEFT", frame, "TOPLEFT", PAD,
+        -(HEADER + STAGE_H + (#STATS + 1) * ROW_HEIGHT + 6))
+    frame.noBuffNote:SetText(L["No flask or food active - the best players have both, part of the gap comes from that."])
+    frame.noBuffNote:Hide()
 
     frame.legend = CreateFrame("Frame", nil, frame)
     frame.legend:SetSize(WIDTH - PAD * 2, 12)
@@ -1183,7 +1316,11 @@ end
 -- Ereignisse
 -------------------------------------------------------------------------------
 -- Diese feuern bei Buffs und Procs laufend; im Kampf werden sie abgemeldet.
-local LIVE_EVENTS = { "COMBAT_RATING_UPDATE", "PLAYER_EQUIPMENT_CHANGED", "UNIT_AURA" }
+-- SOCKET_INFO_SUCCESS und ITEM_CHANGED: beim Umsockeln aendert sich der
+-- Gegenstand, ohne dass er aus- und angelegt wird -- ohne diese beiden
+-- blieb die Edelsteinfarbe stehen (31.10.2026 bemerkt).
+local LIVE_EVENTS = { "COMBAT_RATING_UPDATE", "PLAYER_EQUIPMENT_CHANGED", "UNIT_AURA",
+                      "SOCKET_INFO_SUCCESS", "ITEM_CHANGED" }
 
 local events = CreateFrame("Frame")
 events:RegisterEvent("ADDON_LOADED")
@@ -1244,8 +1381,10 @@ events:SetScript("OnEvent", function(_, event, arg1)
 
     elseif event == "GET_ITEM_INFO_RECEIVED" then
         if ns.BestItemLoaded then ns.BestItemLoaded(arg1) end
+        if ns.EmbellishItemLoaded then ns.EmbellishItemLoaded(arg1) end
 
-    elseif event == "PLAYER_EQUIPMENT_CHANGED" then
+    elseif event == "PLAYER_EQUIPMENT_CHANGED" or event == "SOCKET_INFO_SUCCESS"
+           or event == "ITEM_CHANGED" then
         if ns.GearChanged then ns.GearChanged() end
         QueueUpdate()
 

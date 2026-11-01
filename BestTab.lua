@@ -16,6 +16,12 @@ local MIN_SHARE   = 0.05     -- darunter ist es Rauschen (bei ~175 Spielern: 9)
 local MAX_ROWS    = 4        -- je Block hoechstens so viele Zeilen
 local ROW_H       = 16
 local VALUE_W     = 40     -- rechte Spalte fuer den Anteil
+-- Zwei Spalten wie im Verzierungs-Reiter: Schmuckstuecke links, verzierte Teile
+-- rechts. Einspaltig braeuchte der Reiter rund 514 Pixel, das Charakterfenster
+-- hat 424 -- und mit jeder zusaetzlichen "Du traegst"-Zeile wuerde es mehr
+-- (gemessen 01.11.2026).
+local COL_W       = 300
+local COL_GAP     = 16
 local TRINKET_SLOTS = { 13, 14 }   -- INVSLOT_TRINKET1/2
 
 local TARGETS_UI = { { key = "mplus", label = "Mythic+" }, { key = "raid", label = "Raid" } }
@@ -77,11 +83,14 @@ end
 -- lange Namen werden abgeschnitten), rechts der Anteil. So kann kein
 -- abgeschnittener Prozentwert in der naechsten Zeile mehr entstehen.
 local function HoleZeile(index)
+    local proSpalte = panel.proSpalte or 20
+    local spalte = math.floor((index - 1) / proSpalte)
+    local zeile = (index - 1) % proSpalte
     local row = panel.rows[index]
     if not row then
         row = CreateFrame("Frame", nil, panel.list)
-        row:SetSize(panel.list:GetWidth(), ROW_H)
-        row:SetPoint("TOPLEFT", 0, -(index - 1) * ROW_H)
+        row:SetSize(COL_W, ROW_H)
+        row:SetPoint("TOPLEFT", spalte * (COL_W + COL_GAP), -zeile * ROW_H)
         row.links = row:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
         row.links:SetPoint("LEFT", 0, 0)
         row.links:SetJustifyH("LEFT")
@@ -93,7 +102,11 @@ local function HoleZeile(index)
         row.links:SetPoint("RIGHT", row.rechts, "LEFT", -6, 0)
         panel.rows[index] = row
     end
+    row:SetSize(COL_W, ROW_H)
+    row:ClearAllPoints()
+    row:SetPoint("TOPLEFT", spalte * (COL_W + COL_GAP), -zeile * ROW_H)
     row:Show()
+    if spalte > 0 then panel.zweispaltig = true end
     return row
 end
 
@@ -175,6 +188,8 @@ local function Render()
     local data = TargetData()
     local g = data and data.gear
     for _, t in ipairs(panel.targets) do t.line:SetShown(t.key == Mode()) end
+    panel.proSpalte = ui.RowsPerColumn and ui.RowsPerColumn(ui.HEADER + 44, ROW_H) or 20
+    panel.zweispaltig = false
 
     local state = { n = 0 }
     local function fertig()
@@ -207,8 +222,11 @@ local function Render()
     AddOwn(state, g.trinkets, g.players, trinkets, ui,
            BisSet(g.trinkets, g.trinketPairs, g.players))
 
-    Leerzeile(state)
-    SetzeZeile(state, "|cffffd100" .. L["Embellishments"] .. "|r", "")
+    -- Zweiter Block beginnt oben in der naechsten Spalte: Schmuckstuecke und
+    -- verzierte Teile sind zwei getrennte Themen, das macht es auch optisch.
+    local proSpalte = panel.proSpalte or 20
+    while state.n % proSpalte ~= 0 do Leerzeile(state) end
+    SetzeZeile(state, "|cffffd100" .. L["Embellished items"] .. "|r", "")
     AddRows(state, g.embellish, g.players, ui)
     AddOwn(state, g.embellish, g.players, embellished, ui,
            BisSet(g.embellish, g.embellishPairs, g.players))
@@ -220,7 +238,7 @@ function ns.CreateBestTab(frame)
     local ui, L = UI(), UI().L
     panel = CreateFrame("Frame", nil, frame)
     panel:SetPoint("TOPLEFT", ui.PAD, -ui.HEADER)
-    panel:SetSize(ui.WIDTH - ui.PAD * 2, 200)
+    panel:SetSize(COL_W * 2 + COL_GAP, 200)
     panel:Hide()
 
     panel.forText = panel:CreateFontString(nil, "OVERLAY", "GameFontHighlightSmall")
@@ -252,7 +270,7 @@ function ns.CreateBestTab(frame)
 
     panel.list = CreateFrame("Frame", nil, panel)
     panel.list:SetPoint("TOPLEFT", 0, -26)
-    panel.list:SetSize(ui.WIDTH - ui.PAD * 2, 1)
+    panel.list:SetSize(COL_W * 2 + COL_GAP, 1)
     panel.rows = {}
     panel.zeilen = 0
 
@@ -264,7 +282,15 @@ function ns.ShowBestTab()
     if not panel then return 0 end
     panel:Show()
     Render()
-    return 30 + (panel.zeilen or 0) * ROW_H + 8
+    local proSpalte = panel.proSpalte or 20
+    return 30 + math.min(panel.zeilen or 0, proSpalte) * ROW_H + 8
+end
+
+-- Breite, die der Reiter gerade braucht (eine oder zwei Spalten).
+function ns.BestWidth()
+    if not panel then return nil end
+    local spalten = panel.zweispaltig and 2 or 1
+    return spalten * COL_W + (spalten - 1) * COL_GAP
 end
 
 function ns.HideBestTab()

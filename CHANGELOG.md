@@ -1,5 +1,31 @@
 # Changelog
 
+## 1.3.0
+
+* **Neuer Reiter „Verzierung".** Er zeigt, welche Verzierungen die Besten
+  deiner Spezialisierung nutzen - und zwar die Verzierung selbst, nicht nur das
+  verzierte Teil. Dazu die haeufigsten Kombinationen mit [BIS]-Marke, je Eintrag
+  ein Satz zur Wirkung und die Plaetze, auf denen sie tatsaechlich sitzen.
+  Darunter deine eigene Kombination, wie verbreitet sie ist und was die Mehrheit
+  stattdessen faehrt.
+* **Edelsteinfarben erklaert.** Beim „Ring des Loaanbeters" entscheidet die
+  Farbe deiner Sockelsteine, welcher Loa beschworen wird: Peridot ruft Akil'zon
+  (+75 Tempo), Amethyst Halazzi (Schaden), und jede zusaetzliche Farbe senkt die
+  Chance auf den gewuenschten. Der Reiter zaehlt deine Steine, nennt den Loa und
+  sagt, welche Farbe die Besten bevorzugen. Das steht so in keinem Tooltip.
+* Der Reiter „Die Besten" heisst jetzt **„Trinkets"**. Er und der neue Reiter
+  zeigen ihren Inhalt in zwei Spalten, damit das Fenster nicht laenger wird als
+  das Charakterfenster.
+* **Ohne Flaeschchen und Essen** sagt das Addon es jetzt ausdruecklich - vorher
+  stand da nur eine unerklaerte Luecke in der Summe.
+* Die Ueberschrift „Verzierungen" heisst **„Verzierte Teile"**: Die Prozentzahl
+  gilt dem Teil, nicht der Verzierung darin.
+* „Top-Spieler" heisst jetzt **„Beste"** - auf der Alltagsstufe sind es die
+  besten Spieler dieses Schluesselbands, nicht die Weltspitze.
+* Der Inhalt springt beim Umschalten zwischen Mythic+ und Raid nicht mehr.
+* Zielwerte vom 01.11.2026: 120 Abrufe ueber alle Spezialisierungen, 10279
+  ausgewertete Spieler (kleinste Gruppe 52).
+
 ## 1.2.0
 
 * **Zwei Leistungsstufen fuer Mythic+.** Ueber den Balken steht jetzt eine
