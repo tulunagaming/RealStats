@@ -31,14 +31,22 @@ levels are nearly the same, RealStats says so, so nothing looks broken.
 The choice is remembered per character and specialization and also applies to
 the gear optimizer and the trinket tab.
 
-![RealStats: Best trinkets tab, switched to the everyday keys](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-best-trinkets.jpg)
+![RealStats: Embellishment tab with Loa gem colours](https://raw.githubusercontent.com/tulunagaming/RealStats/main/docs/screenshot-best-trinkets.jpg)
 
 ## Tabs
 
 * **Mythic+** and **Raid**: separate targets, because the best players gear
   differently for each.
-* **Best trinkets**: which trinkets and embellishments the best players of your
-  spec wear, in percent, next to what you wear yourself.
+* **Trinkets**: which trinkets the best players of your spec wear, in percent,
+  next to what you wear yourself.
+* **Embellishment**: which embellishments they use - the embellishment itself,
+  not just the embellished item. With the most common combinations, what each
+  one does, and where it actually sits. Below that, your own combination and
+  how common it is.
+  It also explains your **gem colours**: with the Loa Worshiper's Band, the
+  colour of your gems decides which Loa you summon - Peridot calls Akil'zon
+  (+75 haste), Amethyst calls Halazzi (damage), and every extra colour lowers
+  the chance of getting the one you want. Nothing in the game tells you this.
 * **Gear**: finds the combination of equipped items and items in your bags that
   comes closest to the targets, equips it with one click and saves it as an
   equipment set. Each key level gets its own set ("RealStats M+",

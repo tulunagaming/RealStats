@@ -259,11 +259,31 @@ local function Render()
     local farben, steine, eigene, jewel = EigeneAusruestung()
     Zeile(state, "", "")
     Ueberschrift(state, L["You wear"])
+    -- Erst feststellen, ob die eigene Kombination die haeufigste ist -- dann
+    -- bekommt sie dieselbe [BIS]-Marke wie oben in der Liste.
+    local meine = {}
+    for id in pairs(eigene) do table.insert(meine, id) end
+    table.sort(meine)
+    local treffer, bester
+    for _, p in ipairs(g.embIDPairs or {}) do
+        if not bester then bester = p end
+        local passt
+        if #meine == 1 then
+            passt = (p[1] == meine[1] and (p[2] == 0 or p[2] == meine[1]))
+        elseif #meine == 2 then
+            passt = (p[1] == meine[1] and p[2] == meine[2])
+                     or (p[1] == meine[2] and p[2] == meine[1])
+        end
+        if passt then treffer = p end
+    end
+    local istBis = treffer ~= nil and treffer == bester
+
     local hat = false
-    for id in pairs(eigene) do
+    for _, id in ipairs(meine) do
         hat = true
-        local name, icon, text = Beschreibe(id)
-        Zeile(state, (icon and ("|T" .. icon .. ":14:14:0:0|t ") or "") .. name, "")
+        local name, icon = Beschreibe(id)
+        Zeile(state, (istBis and "|cffffffff[BIS]|r " or "")
+            .. (icon and ("|T" .. icon .. ":14:14:0:0|t ") or "") .. name, "")
     end
     if not hat then
         Zeile(state, "|cff999999" .. L["No embellishment equipped."] .. "|r", "")
@@ -273,21 +293,6 @@ local function Render()
     -- und daneben, was die Mehrheit stattdessen faehrt. Den Schluss zieht der
     -- Spieler (siehe konzept-verzierungen.md).
     if hat and g.embIDPairs then
-        local meine = {}
-        for id in pairs(eigene) do table.insert(meine, id) end
-        table.sort(meine)
-        local treffer, bester
-        for _, p in ipairs(g.embIDPairs) do
-            if not bester then bester = p end
-            local passt
-            if #meine == 1 then
-                passt = (p[1] == meine[1] and (p[2] == 0 or p[2] == meine[1]))
-            elseif #meine == 2 then
-                passt = (p[1] == meine[1] and p[2] == meine[2])
-                         or (p[1] == meine[2] and p[2] == meine[1])
-            end
-            if passt then treffer = p end
-        end
         if treffer then
             Fliesstext(state, string.format("|cff808080  %s|r", string.format(
                 L["%d %% of the best use this combination."],

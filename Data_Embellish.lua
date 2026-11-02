@@ -36,6 +36,8 @@ if GetLocale and GetLocale() == "deDE" then
     L["Chance for +40 versatility"] = "Chance auf +40 Vielseitigkeit"
     L["Periodic effects raise primary stat, stacking"] =
         "Effekte über Zeit erhöhen den Primärwert, stapelbar"
+    L["Healing can grant your target versatility"] =
+        "Heilzauber können dem Ziel Vielseitigkeit geben"
     L["Peridot (green)"]   = "Peridot (grün)"
     L["Amethyst (purple)"] = "Amethyst (lila)"
     L["Garnet (red)"]      = "Granat (rot)"
@@ -64,6 +66,11 @@ ns.EMBELLISH = {
     [13767] = { item = 273069, slot = "Any slot", text = L["Chance for more haste"] },
     [13640] = { item = 245874, slot = "Weapon",   text = L["Chance for +40 versatility"] },
     [12385] = { item = 240165, slot = "Armor",    text = L["Periodic effects raise primary stat, stacking"] },
+    [12686] = { item = 244604, slot = "Any slot", text = L["Healing can grant your target versatility"] },
+    -- Offen (02.11.2026): 13852, 12685, 14004, 13768, 13453. Ihre Effekttexte
+    -- zeigt der Tooltip-Dienst nur auf einem passenden Traegergegenstand, den
+    -- wir noch nicht gefunden haben. Das Addon zeigt sie mit Name und Anteil,
+    -- aber ohne Erklaerung -- besser als eine geratene.
 }
 
 -- Gegenstaende, die ihre Verzierung fest mitbringen. Sie tauchen im Wochenlauf

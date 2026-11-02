@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.2
+
+* Traegst du selbst die haeufigste Kombination, steht **[BIS]** jetzt auch
+  unter "Du traegst" - vorher nur oben in der Liste.
+* Ein weiterer Erklaertext (Gesegneter Pango-Talisman).
+* Beschreibung und README kennen jetzt den Reiter "Verzierung".
+
 ## 1.3.1
 
 * Der Reiter **Trinkets** zeigt nur noch Schmuckstuecke. Der Block "Verzierte
