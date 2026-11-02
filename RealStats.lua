@@ -125,6 +125,7 @@ if GetLocale() == "deDE" then
     L["Embellishment tab"] = "Verzierung"
     L["Which embellishments the best players of your spec use, and what your own gem colours mean."] =
         "Welche Verzierungen die Besten deiner Spezialisierung nutzen - und was deine eigenen Edelsteinfarben bedeuten."
+    L["Embellishment #%d"] = "Unbekannte Verzierung (%d)"
     L["Most common combinations"] = "Häufigste Kombinationen"
     L["Single"]            = "Einzeln"
     L["alone"]             = "allein"

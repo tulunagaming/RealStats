@@ -35,10 +35,19 @@ end
 -- Name und Symbol: Verzierungen ueber ihr Reagenz, eingebaute ueber den
 -- Gegenstand selbst. Beides holt das Spiel, damit jeder Client seine Sprache
 -- bekommt und wir keine Namen pflegen muessen.
+-- Bonus-IDs sind klein (vierstellig), Gegenstands-IDs sechsstellig. Eine
+-- unbekannte Bonus-ID darf nicht als Gegenstand nachgeschlagen werden -- sonst
+-- steht dort ein beliebiges altes Item (13852 waere "The Grand Crusader's
+-- Command"). Dann lieber ehrlich "Verzierung #13852" (02.11.2026).
+local ITEM_ID_AB = 100000
+
 local function Beschreibe(id)
     local info = ns.EMBELLISH and ns.EMBELLISH[id]
-    local item = info and info.item or id
     local eingebaut = ns.EMBELLISH_ITEMS and ns.EMBELLISH_ITEMS[id]
+    if not info and not eingebaut and id < ITEM_ID_AB then
+        return string.format(UI().L["Embellishment #%d"], id), nil, nil, nil, nil
+    end
+    local item = info and info.item or id
     local name, link = C_Item.GetItemInfo(item)
     local icon = C_Item.GetItemIconByID and C_Item.GetItemIconByID(item)
     if not name then

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.3
+
+* **Fehler behoben:** Verzierungen, fuer die noch kein Erklaertext hinterlegt
+  ist, wurden mit einem falschen Namen angezeigt - das Addon schlug die
+  Bonus-Nummer als Gegenstand nach und fand irgendein altes Item ("The Grand
+  Crusader's Command"). Jetzt steht dort "Unbekannte Verzierung (Nummer)".
+
 ## 1.3.2
 
 * Traegst du selbst die haeufigste Kombination, steht **[BIS]** jetzt auch
