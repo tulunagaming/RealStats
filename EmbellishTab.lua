@@ -148,6 +148,7 @@ local function EigeneAusruestung()
                     -- der Gegenstand seine Verzierung selbst mit.
                     local gefunden = false
                     for _, b in ipairs(VerzierungenImLink(link)) do
+                        -- (VerzierungenImLink prueft bereits ns.EMBELLISH)
                         verz[b] = true
                         gefunden = true
                     end
@@ -194,7 +195,8 @@ local function Render()
     local gezeigt = 0
     for _, p in ipairs(g.embIDPairs or {}) do
         local anteil = p[3] / gesamt
-        if gezeigt < 3 and anteil >= MIN_SHARE then
+        local raus = ns.NOT_EMBELLISH and (ns.NOT_EMBELLISH[p[1]] or ns.NOT_EMBELLISH[p[2]])
+        if gezeigt < 3 and anteil >= MIN_SHARE and not raus then
             gezeigt = gezeigt + 1
             -- Zwei Namen passen nicht in eine Zeile. Der zweite steht darunter,
             -- eingerueckt und mit Pluszeichen -- so bleibt nichts abgeschnitten.
@@ -230,6 +232,7 @@ local function Render()
     for _, e in ipairs(g.embIDs or {}) do
         local anteil = (traeger[e[1]] or e[2]) / gesamt
         if anteil > 1 then anteil = 1 end
+        if ns.NOT_EMBELLISH and ns.NOT_EMBELLISH[e[1]] then anteil = 0 end
         if n < MAX_ROWS and anteil >= MIN_SHARE then
             n = n + 1
             local name, icon, text, slot = Beschreibe(e[1])

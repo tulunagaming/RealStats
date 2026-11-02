@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.4
+
+* **Zwei Eintraege waren keine Verzierungen.** Der Wochenlauf erkennt eine
+  Verzierung daran, dass ihre Nummer nur auf verzierten Teilen vorkommt -
+  geprueft je Spezialisierung. Bei zwei Nummern (13852, 14004) ging das schief:
+  An einem Kampflog mit 400 Spielern stehen sie auch auf unverzierten Teilen.
+  Sie werden nicht mehr angezeigt.
+
 ## 1.3.3
 
 * **Fehler behoben:** Verzierungen, fuer die noch kein Erklaertext hinterlegt

@@ -73,6 +73,14 @@ ns.EMBELLISH = {
     -- aber ohne Erklaerung -- besser als eine geratene.
 }
 
+-- Keine Verzierungen, obwohl der Wochenlauf sie dafuer haelt. Sein Filter
+-- prueft je Spezialisierung, ob eine Bonus-ID nur auf verzierten Teilen
+-- vorkommt; faellt die Stichprobe unguenstig, rutscht etwas durch. An Roys
+-- Kampflog gemessen (02.11.2026, 400 Spieler): 13852 steht 39-mal auf
+-- verzierten und 6-mal auf unverzierten Teilen, 14004 26-mal zu 8-mal.
+-- Beide sind also ein anderes Merkmal und werden nicht angezeigt.
+ns.NOT_EMBELLISH = { [13852] = true, [14004] = true }
+
 -- Gegenstaende, die ihre Verzierung fest mitbringen. Sie tauchen im Wochenlauf
 -- mit ihrer Gegenstands-ID auf, nicht mit einer Bonus-ID.
 ns.EMBELLISH_ITEMS = {
