@@ -222,14 +222,11 @@ local function Render()
     AddOwn(state, g.trinkets, g.players, trinkets, ui,
            BisSet(g.trinkets, g.trinketPairs, g.players))
 
-    -- Zweiter Block beginnt oben in der naechsten Spalte: Schmuckstuecke und
-    -- verzierte Teile sind zwei getrennte Themen, das macht es auch optisch.
-    local proSpalte = panel.proSpalte or 20
-    while state.n % proSpalte ~= 0 do Leerzeile(state) end
-    SetzeZeile(state, "|cffffd100" .. L["Embellished items"] .. "|r", "")
-    AddRows(state, g.embellish, g.players, ui)
-    AddOwn(state, g.embellish, g.players, embellished, ui,
-           BisSet(g.embellish, g.embellishPairs, g.players))
+    -- Verzierte Teile standen frueher hier. Die Zahl zaehlte aber den
+    -- *Gegenstand*, nicht die Verzierung darin -- "88 % tragen diese
+    -- Armschienen" sagt nichts darueber, was drinsteckt, und beim Loa-Ring
+    -- laesst sich ueberhaupt nichts auftragen. Seit 1.3.0 beantwortet der
+    -- Reiter "Verzierung" dieselbe Frage richtig (Roy, 02.11.2026).
 
     fertig()
 end

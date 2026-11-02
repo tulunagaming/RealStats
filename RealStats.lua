@@ -795,11 +795,7 @@ local function Update()
             frame.explain:SetPoint("BOTTOMLEFT", PAD, 24)
         end
         frame.explain:SetText(g and g.players
-            and (string.format(L["What the %d best players of your spec wear. Same sample as the targets."], g.players)
-                 -- Ehrlich bleiben: die Prozentzahl unter "Verzierte Teile" gilt dem
-                 -- Teil, nicht der Verzierung darin. Warcraft Logs gibt nur ein
-                 -- Ja/Nein heraus (geprueft 31.10.2026 an den Bonus-IDs).
-                 .. " " .. L["Embellished items: the logs only say that a piece is embellished, not which embellishment is in it."])
+            and string.format(L["What the %d best players of your spec wear. Same sample as the targets."], g.players)
             or "")
         frame.explain:SetShown(g ~= nil)
         frame.footer:SetText("")

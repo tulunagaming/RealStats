@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.3.1
+
+* Der Reiter **Trinkets** zeigt nur noch Schmuckstuecke. Der Block "Verzierte
+  Teile" ist weg: Seine Prozentzahl zaehlte den *Gegenstand*, nicht die
+  Verzierung darin - "88 % tragen diese Armschienen" sagt nichts darueber, was
+  drinsteckt, und beim Ring des Loaanbeters laesst sich ueberhaupt nichts
+  auftragen. Die Frage beantwortet seit 1.3.0 der Reiter "Verzierung" richtig.
+* Dadurch passt der Trinkets-Reiter wieder in eine Spalte.
+
 ## 1.3.0
 
 * **Neuer Reiter „Verzierung".** Er zeigt, welche Verzierungen die Besten
