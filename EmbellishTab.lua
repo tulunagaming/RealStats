@@ -148,9 +148,11 @@ local function EigeneAusruestung()
                     -- der Gegenstand seine Verzierung selbst mit.
                     local gefunden = false
                     for _, b in ipairs(VerzierungenImLink(link)) do
-                        -- (VerzierungenImLink prueft bereits ns.EMBELLISH)
                         verz[b] = true
                         gefunden = true
+                        -- Auch aufgetragene Juwelierskunst-Verzierungen zaehlen
+                        -- fuer den Juwelenschultergurt, nicht nur eingebaute.
+                        if ns.EMBELLISH[b].jewel then jewel = true end
                     end
                     if not gefunden then verz[e.id] = true end
                     local fest = ns.EMBELLISH_ITEMS and ns.EMBELLISH_ITEMS[e.id]
@@ -170,7 +172,15 @@ local function EigeneAusruestung()
             end
         end
     end
-    return farben, steine, verz, jewel
+    -- Will die eigene Ausruestung viele oder wenige Farben? Der Loa-Ring
+    -- verduennt mit jeder Farbe, Fokusiris und das Signet belohnen jede.
+    local mag_viele, mag_wenige = false, false
+    for id in pairs(verz) do
+        local e = (ns.EMBELLISH and ns.EMBELLISH[id]) or (ns.EMBELLISH_ITEMS and ns.EMBELLISH_ITEMS[id])
+        if e and e.likesColors then mag_viele = true end
+        if e and e.fewColors then mag_wenige = true end
+    end
+    return farben, steine, verz, jewel, mag_viele, mag_wenige
 end
 
 local function Render()
@@ -268,7 +278,7 @@ local function Render()
     end
 
     -- Eigene Lage
-    local farben, steine, eigene, jewel = EigeneAusruestung()
+    local farben, steine, eigene, jewel, magViele, magWenige = EigeneAusruestung()
     Zeile(state, "", "")
     Ueberschrift(state, L["You wear"])
     -- Erst feststellen, ob die eigene Kombination die haeufigste ist -- dann
@@ -386,7 +396,13 @@ local function Render()
                     L["%d %% of the best wear the same colour."],
                     ui.Round(anteilM * 100))))
             end
-            if anzahl > 1 then
+            -- Die Empfehlung haengt davon ab, was man traegt: manche Teile
+            -- belohnen Farbvielfalt, der Loa-Ring bestraft sie.
+            if magViele and magWenige then
+                Fliesstext(state, "|cffe6a23c  " .. L["Your items disagree: one rewards many colours, another few."] .. "|r")
+            elseif magViele then
+                Fliesstext(state, "|cff808080  " .. L["Your gear rewards every additional colour."] .. "|r")
+            elseif magWenige and anzahl > 1 then
                 Fliesstext(state, "|cff808080  " .. L["Each extra colour adds another Loa and lowers the chance."] .. "|r")
             end
         end

@@ -1,5 +1,23 @@
 # Changelog
 
+## 1.3.5
+
+* **Alle Verzierungen benannt und erklaert.** Jede Verzierung, die in den Daten
+  vorkommt, hat jetzt ihren Namen aus dem Spiel und einen Satz zur Wirkung -
+  einschliesslich der Bedingungen, die den Nutzen ausmachen: Der Ritualstein
+  wirkt nur im Freien auf einer Beutejagd staerker, der Verzierte Reissszahn
+  loest haeufiger aus, je weniger Leben das Ziel hat, der Ammolit gibt
+  kritischen Trefferwert und bei voller Stapelzahl einen Schadensimpuls.
+* **Juwelierskunst-Verzierungen werden vollstaendig erkannt.** Der
+  Juwelenschultergurt verdoppelt sie - bisher galt nur der Ring des Loaanbeters
+  als solche, jetzt auch Schuppentieramulett, Fokusiris und Ammolit.
+* **Edelsteinfarben: die Empfehlung haengt an deiner Ausruestung.** Der Ring des
+  Loaanbeters wird mit jeder zusaetzlichen Farbe schwaecher, Fokusiris und das
+  Signet der Segen von Azeroth dagegen staerker. Traegst du beides, sagt das
+  Addon, dass deine Teile sich widersprechen.
+* Platzangaben berichtigt: Der Ammolit geht nur auf Schmuck, Verschlingende
+  Baender auch auf Ruestung.
+
 ## 1.3.4
 
 * **Zwei Eintraege waren keine Verzierungen.** Der Wochenlauf erkennt eine

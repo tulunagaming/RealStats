@@ -133,6 +133,7 @@ if GetLocale() == "deDE" then
     L["Weapon"]            = "Waffe"
     L["Any slot"]          = "Alle Plätze"
     L["Ring"]              = "Ring"
+    L["Jewellery"]         = "Schmuck"
     L["No embellishment equipped."] = "Du trägst keine Verzierung."
     L["Works - you wear a jewelcrafting embellishment."] =
         "Wirkt - du trägst eine Juwelierskunst-Verzierung."
@@ -153,6 +154,10 @@ if GetLocale() == "deDE" then
         "%d %% der Besten tragen %s - das beschwört %s: %s."
     L["%d %% of the best wear the same colour."] =
         "%d %% der Besten tragen dieselbe Farbe."
+    L["Your gear rewards every additional colour."] =
+        "Deine Ausrüstung belohnt jede weitere Farbe."
+    L["Your items disagree: one rewards many colours, another few."] =
+        "Deine Teile widersprechen sich: eines belohnt viele Farben, ein anderes wenige."
     L["Each extra colour adds another Loa and lowers the chance."] =
         "Jede weitere Farbe wirft einen Loa mehr in den Topf und senkt die Chance."
     L["%d best players"]   = "%d beste Spieler"
