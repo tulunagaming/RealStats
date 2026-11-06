@@ -1,5 +1,29 @@
 # Changelog
 
+## 1.4.0
+
+* **Neuer Reiter "BiS": Platz fuer Platz, was die Besten tragen.** Fuer jeden
+  Ausruestungsplatz zeigt er das Teil, das die Besten deiner Spezialisierung am
+  haeufigsten anlegen, und daneben, wie viele von ihnen es tragen. Oben stehen
+  die Plaetze, auf denen deine Ausruestung abweicht - mit deinem eigenen Teil
+  darunter, damit du beides nebeneinander siehst. Was uebereinstimmt, folgt als
+  Bestaetigung.
+* **Keine Empfehlung, nur Zahlen.** Ein niedriger Anteil kann schlicht an deiner
+  Gegenstandsstufe liegen und nicht an einer falschen Wahl. Der Reiter sagt
+  deshalb, wie viele es tragen, und nicht, was du tun sollst.
+* **Vertauschte Ringe und Schmuckstuecke gelten nicht als Abweichung.** Die
+  beiden Plaetze halten dasselbe Angebot - welcher Ring links und welcher rechts
+  steckt, ist ohne Belang.
+* **Maus ueber eine Zeile zeigt den vollen Gegenstands-Tooltip.**
+* **Der Wochenlauf erhebt jetzt die ganze Ausruestung.** Bisher wurden nur
+  Schmuckstuecke und Verzierungen ausgewertet, der Rest wurde verworfen. Jetzt
+  zaehlt er je Platz die drei haeufigsten Teile - fuer alle 40
+  Spezialisierungen, in beiden Mythic+-Stufen und im Raid. Teile, die weniger
+  als 5 % tragen, bleiben draussen: das sind Einzelgaenger, keine Aussage ueber
+  das Feld. Hemd und Abzeichen tragen keine Werte und werden nicht gezeigt.
+* Das Fenster ist 32 Pixel breiter, damit die sechs Reiter nebeneinander passen.
+  Es bleibt schmaler als das Charakterfenster.
+
 ## 1.3.5
 
 * **Alle Verzierungen benannt und erklaert.** Jede Verzierung, die in den Daten

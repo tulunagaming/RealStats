@@ -123,6 +123,19 @@ if GetLocale() == "deDE" then
         "Nur als Orientierungsstrich; die Besten setzen kaum darauf."
     L["Trinkets tab"]      = "Trinkets"
     L["Embellishment tab"] = "Verzierung"
+    L["BiS tab"]           = "BiS"
+    L["Trinket"]           = "Schmuck"
+    L["You"]               = "Du"
+    L["Where you differ"]  = "Hier weichst du ab"
+    L["Same as the field"] = "Wie das Feld"
+    L["%d of %d slots like the field"] = "%d von %d Plätzen wie das Feld"
+    L["%d of the best, item level %d"] = "%d der Besten, Stufe %d"
+    L["Share = how many of the best wear this item."] =
+        "Anteil = wie viele der Besten es tragen"
+    L["No data for your specialization yet."] =
+        "Für deine Spezialisierung liegen noch keine Daten vor."
+    L["Slot by slot: what the best players of your spec wear, and where your own gear differs. A low share can simply mean your item level - it is not a verdict."] =
+        "Platz für Platz: was die Besten deiner Spezialisierung tragen und wo deine Ausrüstung abweicht. Ein kleiner Anteil kann schlicht an deiner Gegenstandsstufe liegen - er ist kein Urteil."
     L["Which embellishments the best players of your spec use, and what your own gem colours mean."] =
         "Welche Verzierungen die Besten deiner Spezialisierung nutzen - und was deine eigenen Edelsteinfarben bedeuten."
     L["Embellishment #%d"] = "Unbekannte Verzierung (%d)"
@@ -183,9 +196,11 @@ end
 -------------------------------------------------------------------------------
 -- Aufbau
 -------------------------------------------------------------------------------
-local WIDTH       = 350     -- die fuenf Reiter brauchen rund 338 px; bei 260
+local WIDTH       = 382     -- die sechs Reiter brauchen rund 373 px; bei 260
                             -- stand "Bester Schmuck" ueber dem Rand
-                            -- (31.10.2026). Der Rest etwas Luft fuer
+                            -- (31.10.2026), bei 350 passte der BiS-Reiter nicht
+                            -- mehr dazu (04.11.2026). Breiter ist in Ordnung,
+                            -- das Charakterfenster hat 424. Der Rest etwas Luft fuer
                             -- laengere Uebersetzungen.
 local PAD         = 12
 local ROW_HEIGHT  = 34
@@ -203,6 +218,7 @@ local TABS = {
     { key = "gear",  label = "Gear" },
     { key = "best",  label = "Trinkets tab" },
     { key = "emb",   label = "Embellishment tab" },
+    { key = "bis",   label = "BiS tab" },
 }
 
 -- Zwei Leistungsstufen für Mythic+: die Spitze wie bisher, dazu ein Alltagsband.
@@ -737,6 +753,37 @@ local function Update()
 
     -- Vierter Reiter: Was die Besten tragen
     -- Fuenfter Reiter: Verzierungen und Edelsteinfarben
+    -- Sechster Reiter: Ausruestung Platz fuer Platz, mit den eigenen Abweichungen
+    if db().tab == "bis" then
+        for _, row in ipairs(rows) do row:Hide() end
+        frame.legend:Hide()
+        frame.buffNote:Hide()
+        frame.message:Hide()
+        frame.stageNote:Hide()
+        frame.noBuffNote:Hide()
+        if ns.HideGearTab then ns.HideGearTab() end
+        if ns.HideBestTab then ns.HideBestTab() end
+        if ns.HideEmbellishTab then ns.HideEmbellishTab() end
+        frame.subtitle:SetText("")
+        if ns.BisPanel then
+            ns.BisPanel:ClearAllPoints()
+            ns.BisPanel:SetPoint("TOPLEFT", PAD, -top)
+        end
+        local h = ns.ShowBisTab and ns.ShowBisTab() or 0
+        local breiteBis = (ns.BisWidth and ns.BisWidth() or 0) + PAD * 2
+        frame:SetWidth(math.max(WIDTH, breiteBis))
+        frame.explain:SetWidth(math.max(WIDTH, breiteBis) - PAD * 2)
+        frame.explain:ClearAllPoints()
+        frame.explain:SetPoint("BOTTOMLEFT", PAD, 24)
+        frame.explain:SetText(L["Slot by slot: what the best players of your spec wear, and where your own gear differs. A low share can simply mean your item level - it is not a verdict."])
+        frame.explain:SetShown(true)
+        frame.footer:SetText("")
+        local ehBis = frame.explain:GetStringHeight()
+        ehBis = math.max(EXPLAIN_H, (type(ehBis) == "number" and ehBis or 0) + 10)
+        frame:SetHeight(PanelHeight(top + h + ehBis + 24, true))
+        return
+    end
+    if ns.HideBisTab then ns.HideBisTab() end
     if db().tab == "emb" then
         for _, row in ipairs(rows) do row:Hide() end
         frame.legend:Hide()
@@ -1092,6 +1139,7 @@ function RefreshStages()
         or (db().tab == "gear" and (db().optFor or "mplus") == "mplus")
         or (db().tab == "best" and (db().bestFor or "mplus") == "mplus")
         or (db().tab == "emb" and (db().bestFor or "mplus") == "mplus")
+        or (db().tab == "bis" and (db().bestFor or "mplus") == "mplus")
     local active = Stage()
     local previous
     for _, b in ipairs(frame.stages) do
@@ -1240,6 +1288,7 @@ local function CreateMainFrame()
     if ns.CreateGearTab then ns.CreateGearTab(frame) end
     if ns.CreateBestTab then ns.CreateBestTab(frame) end
     if ns.CreateEmbellishTab then ns.CreateEmbellishTab(frame) end
+    if ns.CreateBisTab then ns.CreateBisTab(frame) end
 
     frame.message = frame:CreateFontString(nil, "OVERLAY", "GameFontDisable")
     frame.message:SetPoint("TOPLEFT", PAD, -HEADER)
@@ -1384,6 +1433,7 @@ events:SetScript("OnEvent", function(_, event, arg1)
     elseif event == "GET_ITEM_INFO_RECEIVED" then
         if ns.BestItemLoaded then ns.BestItemLoaded(arg1) end
         if ns.EmbellishItemLoaded then ns.EmbellishItemLoaded(arg1) end
+        if ns.BisItemLoaded then ns.BisItemLoaded(arg1) end
 
     elseif event == "PLAYER_EQUIPMENT_CHANGED" or event == "SOCKET_INFO_SUCCESS"
            or event == "ITEM_CHANGED" then

@@ -47,6 +47,12 @@ the gear optimizer and the trinket tab.
   colour of your gems decides which Loa you summon - Peridot calls Akil'zon
   (+75 haste), Amethyst calls Halazzi (damage), and every extra colour lowers
   the chance of getting the one you want. Nothing in the game tells you this.
+* **BiS**: slot by slot, the item the best players of your spec wear most often
+  and how many of them wear it. Slots where your gear differs come first, with
+  your own item right below, so you see both side by side. No recommendation -
+  a low share can simply be your item level, not a wrong choice. Rings and
+  trinkets are treated as a pair, so a swapped ring is not reported as a
+  difference. Hover a row for the full item tooltip.
 * **Gear**: finds the combination of equipped items and items in your bags that
   comes closest to the targets, equips it with one click and saves it as an
   equipment set. Each key level gets its own set ("RealStats M+",
