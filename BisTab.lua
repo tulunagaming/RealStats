@@ -67,16 +67,35 @@ local function ItemText(id)
     return link or name, icon
 end
 
+local function Symbol(icon)
+    return icon and ("|T" .. icon .. ":" .. ICON .. ":" .. ICON .. ":0:0|t ") or ""
+end
+
 local function ItemZeile(id)
     local text, icon = ItemText(id)
-    return (icon and ("|T" .. icon .. ":" .. ICON .. ":" .. ICON .. ":0:0|t ") or "") .. text
+    return Symbol(icon) .. text
+end
+
+-- Das eigene Teil zeigen wir mit seinem echten Link aus dem Platz: der traegt
+-- Aufwertungsstufe und Qualitaet. Ueber die ID (GetItemInfo) kaeme nur der
+-- Grundgegenstand heraus -- bei einem Nutzer erschienen so Held- und
+-- Mythos-Teile blau (11.11.2026).
+local function EigeneZeile(e)
+    if not e.meinLink then return ItemZeile(e.meins) end
+    local icon = select(5, C_Item.GetItemInfoInstant(e.meinLink))
+    return Symbol(icon or (C_Item.GetItemIconByID and C_Item.GetItemIconByID(e.meins))) .. e.meinLink
 end
 
 -- Maus ueber einer Zeile zeigt den vollen Gegenstands-Tooltip. Die Zeile merkt
 -- sich dafuer die Item-ID; Zeilen ohne Gegenstand (Ueberschriften) bleiben
 -- stumm und lassen Klicks durch.
-local function SetzeTooltip(row, id)
-    row.itemID = id
+local function SetzeTooltip(row, id, invSlot)
+    -- "or false" statt nil: ein leeres Feld fragt sonst die Metatabelle des
+    -- Rahmens, und die liefert nicht in jeder Umgebung nil (Testattrappe).
+    row.itemID = id or false
+    -- Eigenes Teil: Tooltip direkt vom Platz, mit Stufe, Edelsteinen und
+    -- Verzauberung. Teil des Felds: nur der Grundgegenstand ist bekannt.
+    row.invSlot = invSlot or false
     -- Ohne Gegenstand nimmt die Zeile keine Maus an, damit Ueberschriften und
     -- Leerzeilen keine Klicks wegfangen. Die Skripte haengen fest an der Zeile
     -- (siehe HoleZeile) und fragen itemID selbst ab.
@@ -87,7 +106,7 @@ end
 local function EigenesItem(platz)
     local link = GetInventoryItemLink("player", platz + 1)
     if not link then return nil end
-    return (C_Item.GetItemInfoInstant(link))
+    return (C_Item.GetItemInfoInstant(link)), link
 end
 
 -------------------------------------------------------------------------------
@@ -115,7 +134,11 @@ local function HoleZeile(index)
         row:SetScript("OnEnter", function(self)
             if not self.itemID then return end
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
-            GameTooltip:SetItemByID(self.itemID)
+            if self.invSlot then
+                GameTooltip:SetInventoryItem("player", self.invSlot)
+            else
+                GameTooltip:SetItemByID(self.itemID)
+            end
             GameTooltip:Show()
         end)
         row:SetScript("OnLeave", function() GameTooltip:Hide() end)
@@ -129,12 +152,12 @@ local function HoleZeile(index)
     return row
 end
 
-local function Setze(state, links, rechts, id)
+local function Setze(state, links, rechts, id, invSlot)
     state.n = state.n + 1
     local row = HoleZeile(state.n)
     row.links:SetText(links or "")
     row.rechts:SetText(rechts or "")
-    SetzeTooltip(row, id)
+    SetzeTooltip(row, id, invSlot)
 end
 
 local function Anteil(n, gesamt)
@@ -156,7 +179,7 @@ local function Pruefe(daten)
     for _, platz in ipairs(ORDER) do
         local liste = daten.slots and daten.slots[platz]
         if liste and liste[1] then
-            local meins = EigenesItem(platz)
+            local meins, meinLink = EigenesItem(platz)
             -- Anteile beider Plaetze eines Paares zusammenlegen, damit ein
             -- vertauschter Ring nicht als Abweichung gilt.
             local anteile = {}
@@ -172,6 +195,7 @@ local function Pruefe(daten)
                 top = liste[1][1],
                 topAnteil = Anteil(liste[1][2], daten.players),
                 meins = meins,
+                meinLink = meinLink,
                 meinAnteil = meins and Anteil(anteile[meins], daten.players) or nil,
             }
             if not meins then
@@ -221,8 +245,8 @@ local function Render()
         for _, e in ipairs(anders) do
             Setze(state, string.format("|cffffffff%s|r  %s", PlatzName(e.platz), ItemZeile(e.top)),
                   AnteilText(e.topAnteil), e.top)
-            Setze(state, "   |cff40bb4f" .. L["You"] .. ":|r " .. ItemZeile(e.meins),
-                  AnteilText(e.meinAnteil), e.meins)
+            Setze(state, "   |cff40bb4f" .. L["You"] .. ":|r " .. EigeneZeile(e),
+                  AnteilText(e.meinAnteil), e.meins, e.platz + 1)
         end
     end
 
@@ -230,8 +254,8 @@ local function Render()
         Setze(state, "", "")
         Setze(state, "|cffffd100" .. L["Same as the field"] .. "|r", "")
         for _, e in ipairs(gleich) do
-            Setze(state, string.format("|cffffffff%s|r  %s", PlatzName(e.platz), ItemZeile(e.meins)),
-                  AnteilText(e.meinAnteil), e.meins)
+            Setze(state, string.format("|cffffffff%s|r  %s", PlatzName(e.platz), EigeneZeile(e)),
+                  AnteilText(e.meinAnteil), e.meins, e.platz + 1)
         end
     end
 

@@ -1,5 +1,17 @@
 # Changelog
 
+## 1.4.1
+
+* **BiS-Reiter: dein eigenes Teil mit seiner echten Farbe und seinem Tooltip.**
+  Bei einem Spieler erschienen die eigenen Gegenstaende blau, obwohl sie
+  Held- oder Mythos-Stufe haben: Der Reiter hatte sie ueber ihre Nummer
+  nachgeschlagen und dabei den Grundgegenstand bekommen. Jetzt steht dein Teil
+  so da, wie es in deinem Platz steckt, und der Tooltip beim Drueberfahren
+  zeigt genau dein Teil - Stufe, Edelsteine, Verzauberung. An den Zahlen und
+  am Vergleich hat sich nichts geaendert.
+* Zielwerte vom 12.11.2026: 120 Abrufe ueber alle Spezialisierungen, 10120
+  ausgewertete Spieler (kleinste Gruppe 50).
+
 ## 1.4.0
 
 * **Neuer Reiter "BiS": Platz fuer Platz, was die Besten tragen.** Fuer jeden
