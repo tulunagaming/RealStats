@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.4.2
+
+* Zielwerte vom 20.11.2026: 120 Abrufe ueber alle Spezialisierungen in Mythic+ und Raid, 10135 ausgewertete Spieler (kleinste Gruppe 48).
+* Deutlichere Verschiebungen (ab 2 Prozentpunkten): Treffsicherheit-Jaeger (Raid), Verstaerker-Schamane (Raid), Windwandler-Moench (Raid), Heilig-Paladin (Raid), Feuer-Magier (mplusMid), Waechter-Druide (mplusMid) und 3 weitere.
+* Median-Itemlevel der Besten 334 -> 335, die Summen-Zeile steigt entsprechend mit.
+
 ## 1.4.1
 
 * **BiS-Reiter: dein eigenes Teil mit seiner echten Farbe und seinem Tooltip.**

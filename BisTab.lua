@@ -86,16 +86,38 @@ local function EigeneZeile(e)
     return Symbol(icon or (C_Item.GetItemIconByID and C_Item.GetItemIconByID(e.meins))) .. e.meinLink
 end
 
+-- Link fuer den Tooltip eines Feld-Teils: so, wie die Besten es tragen.
+-- Ueber die blosse ID zeigt das Spiel den Grundgegenstand -- bei Roy stand
+-- "Gegenstandsstufe 44" neben seinem eigenen Teil auf Stufe 334 (19.11.2026).
+-- Der Wochenlauf liefert dafuer je Teil die haeufigste Bonus-ID-Kombination
+-- (Aufwertungsstufe, Qualitaet, Verzierung): e = { id, Anzahl, Stufe, { IDs } }.
+-- Aufbau: item:ID, 7 leere Felder (Verzauberung, 4 Steine, Suffix, unique),
+-- Stufe des Spielers, Spezialisierung (Hauptwert), Maske und Kontext leer,
+-- dann Anzahl und Bonus-IDs. Fehlen die IDs (Daten von vor dem 19.11.), gibt
+-- es keinen Link und der Tooltip faellt auf die ID zurueck.
+local function FeldLink(e)
+    local bonus = e and e[4]
+    if type(bonus) ~= "table" or #bonus == 0 then return nil end
+    local ui = UI()
+    local level = UnitLevel and UnitLevel("player") or ""
+    local spec = (ui.CurrentSpecID and ui.CurrentSpecID()) or ""
+    return string.format("item:%d::::::::%s:%s:::%d:%s",
+                         e[1], tostring(level), tostring(spec), #bonus, table.concat(bonus, ":"))
+end
+ns.BisFeldLink = FeldLink    -- fuer die Pruefungen
+
 -- Maus ueber einer Zeile zeigt den vollen Gegenstands-Tooltip. Die Zeile merkt
 -- sich dafuer die Item-ID; Zeilen ohne Gegenstand (Ueberschriften) bleiben
 -- stumm und lassen Klicks durch.
-local function SetzeTooltip(row, id, invSlot)
+local function SetzeTooltip(row, id, invSlot, link)
     -- "or false" statt nil: ein leeres Feld fragt sonst die Metatabelle des
     -- Rahmens, und die liefert nicht in jeder Umgebung nil (Testattrappe).
     row.itemID = id or false
     -- Eigenes Teil: Tooltip direkt vom Platz, mit Stufe, Edelsteinen und
-    -- Verzauberung. Teil des Felds: nur der Grundgegenstand ist bekannt.
+    -- Verzauberung. Teil des Felds: Link aus den Bonus-IDs der Besten
+    -- (FeldLink), ohne sie nur der Grundgegenstand ueber die ID.
     row.invSlot = invSlot or false
+    row.itemLink = link or false
     -- Ohne Gegenstand nimmt die Zeile keine Maus an, damit Ueberschriften und
     -- Leerzeilen keine Klicks wegfangen. Die Skripte haengen fest an der Zeile
     -- (siehe HoleZeile) und fragen itemID selbst ab.
@@ -136,6 +158,8 @@ local function HoleZeile(index)
             GameTooltip:SetOwner(self, "ANCHOR_RIGHT")
             if self.invSlot then
                 GameTooltip:SetInventoryItem("player", self.invSlot)
+            elseif self.itemLink then
+                GameTooltip:SetHyperlink(self.itemLink)
             else
                 GameTooltip:SetItemByID(self.itemID)
             end
@@ -152,12 +176,12 @@ local function HoleZeile(index)
     return row
 end
 
-local function Setze(state, links, rechts, id, invSlot)
+local function Setze(state, links, rechts, id, invSlot, link)
     state.n = state.n + 1
     local row = HoleZeile(state.n)
     row.links:SetText(links or "")
     row.rechts:SetText(rechts or "")
-    SetzeTooltip(row, id, invSlot)
+    SetzeTooltip(row, id, invSlot, link)
 end
 
 local function Anteil(n, gesamt)
@@ -193,6 +217,7 @@ local function Pruefe(daten)
             local eintrag = {
                 platz = platz,
                 top = liste[1][1],
+                topLink = FeldLink(liste[1]),
                 topAnteil = Anteil(liste[1][2], daten.players),
                 meins = meins,
                 meinLink = meinLink,
@@ -244,7 +269,7 @@ local function Render()
         Setze(state, "|cffffd100" .. L["Where you differ"] .. "|r", "")
         for _, e in ipairs(anders) do
             Setze(state, string.format("|cffffffff%s|r  %s", PlatzName(e.platz), ItemZeile(e.top)),
-                  AnteilText(e.topAnteil), e.top)
+                  AnteilText(e.topAnteil), e.top, nil, e.topLink)
             Setze(state, "   |cff40bb4f" .. L["You"] .. ":|r " .. EigeneZeile(e),
                   AnteilText(e.meinAnteil), e.meins, e.platz + 1)
         end
