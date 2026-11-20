@@ -100,19 +100,29 @@ local function Zeile(state, links, rechts)
     row.rechts:SetText(rechts or "")
 end
 
--- Erklaerzeilen sind laenger als eine Zeile breit ist. Sie bekommen die volle
--- Breite (keine Wertspalte) und duerfen umbrechen; dafuer belegen sie zwei
--- Zeilenhoehen, damit nichts uebereinander rutscht.
+-- Erklaerzeilen bekommen die volle Breite (keine Wertspalte) und duerfen
+-- umbrechen. Nur wenn der Text wirklich umbricht, belegen sie zwei
+-- Zeilenhoehen, damit nichts uebereinander rutscht; einzeilige Texte nur eine
+-- (sonst bleiben Luecken und der Rest rutscht aus dem Fenster).
 local function Fliesstext(state, text)
     state.n = state.n + 1
     local row = HoleZeile(state.n)
     row.rechts:SetText("")
     row.rechts:SetWidth(0)
     row.links:SetWordWrap(true)
-    row.links:SetHeight(ROW_H * 2)
     row.links:SetText(text or "")
-    state.n = state.n + 1          -- zweite Zeilenhoehe freihalten
-    HoleZeile(state.n):Hide()
+    local fs = row.links
+    local breite = fs.GetUnboundedStringWidth and fs:GetUnboundedStringWidth()
+    if type(breite) ~= "number" then breite = fs:GetStringWidth() end
+    if type(breite) ~= "number" then breite = 0 end
+    if breite > COL_W - 6 then
+        row.links:SetHeight(ROW_H * 2)
+        state.n = state.n + 1      -- zweite Zeilenhoehe freihalten
+        HoleZeile(state.n):Hide()
+        state.luecke = state.n     -- merken: diese Zeile ist nur Platzhalter
+    else
+        row.links:SetHeight(ROW_H)
+    end
 end
 
 local function Ueberschrift(state, text)
@@ -183,7 +193,7 @@ local function EigeneAusruestung()
     return farben, steine, verz, jewel, mag_viele, mag_wenige
 end
 
-local function Render()
+local function Render(umbruch)
     if not panel then return end
     local ui, L = UI(), UI().L
     panel.proSpalte = ui.RowsPerColumn and ui.RowsPerColumn(ui.HEADER + 44, ROW_H) or 20
@@ -279,7 +289,14 @@ local function Render()
 
     -- Eigene Lage
     local farben, steine, eigene, jewel, magViele, magWenige = EigeneAusruestung()
-    Zeile(state, "", "")
+    local vorEigene = state.n
+    local lueckeVor = state.luecke   -- spaetere Erklaerungen ueberschreiben state.luecke
+    if umbruch then
+        -- Zweiter Durchgang: die eigene Lage beginnt oben in der rechten Spalte.
+        state.n = panel.proSpalte
+    else
+        Zeile(state, "", "")
+    end
     Ueberschrift(state, L["You wear"])
     -- Erst feststellen, ob die eigene Kombination die haeufigste ist -- dann
     -- bekommt sie dieselbe [BIS]-Marke wie oben in der Liste.
@@ -409,6 +426,16 @@ local function Render()
     end
 
     panel.zeilen = state.n
+    -- Reicht der Platz ohnehin nur zweispaltig und passt die eigene Lage ganz in
+    -- eine Spalte, beginnt sie oben rechts statt mitten in der Spalte (Roy 20.11.2026).
+    -- Steht rechts oben nur der Platzhalter einer umbrechenden Erklaerung von
+    -- links, gilt die linke Spalte trotzdem als voll und nicht als ueberlaufen.
+    local linksVoll = vorEigene <= panel.proSpalte
+        or (vorEigene == panel.proSpalte + 1 and lueckeVor == vorEigene)
+    if not umbruch and panel.zweispaltig and linksVoll
+        and (state.n - vorEigene - 1) <= panel.proSpalte then
+        return Render(true)
+    end
 end
 
 function ns.CreateEmbellishTab(frame)

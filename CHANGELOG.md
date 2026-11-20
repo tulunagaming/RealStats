@@ -1,5 +1,14 @@
 # Changelog
 
+## 1.4.3
+
+* **Verzierung-Reiter: nichts steht mehr neben dem Fenster.** Einzeilige
+  Erklaerungen belegten bisher zwei Zeilen; dadurch rutschten die letzten
+  Zeilen (Loa-Wirkung, Anteil gleicher Farbe) rechts aus dem Fenster. Jetzt
+  belegt eine Erklaerung nur so viele Zeilen, wie sie braucht.
+* "Du traegst" beginnt oben in der rechten Spalte, sobald der Reiter
+  zweispaltig ist.
+
 ## 1.4.2
 
 * Zielwerte vom 20.11.2026: 120 Abrufe ueber alle Spezialisierungen in Mythic+ und Raid, 10135 ausgewertete Spieler (kleinste Gruppe 48).
