@@ -1,5 +1,10 @@
 # Changelog
 
+## 1.4.4
+
+* Zielwerte vom 27.11.2026: 120 Abrufe ueber alle Spezialisierungen in Mythic+ und Raid, 10081 ausgewertete Spieler (kleinste Gruppe 46).
+* Deutlichere Verschiebungen (ab 2 Prozentpunkten): Meucheln-Schurke (Raid), Taeuschung-Schurke (Raid), Verstaerker-Schamane (Raid), Windwandler-Moench (Raid), Daemonologie-Hexenmeister (Raid), Schutz-Krieger (Mythic+) und 2 weitere.
+
 ## 1.4.3
 
 * **Verzierung-Reiter: nichts steht mehr neben dem Fenster.** Einzeilige
